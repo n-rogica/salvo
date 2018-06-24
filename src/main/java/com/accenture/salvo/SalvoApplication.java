@@ -37,7 +37,7 @@ public class SalvoApplication {
 		Player dpalmer = new Player("d.palmer@whitehouse.gov");
 
 
-		/* =================== GAMES =================== */
+		/* =================== GAMES ===================== */
 		Game gameBauerObrian = new Game();
 		cal.add(Calendar.HOUR_OF_DAY, 1);
 		Game gameBauerObrian2 = new Game(cal.getTime());
