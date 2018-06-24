@@ -2,6 +2,7 @@ package com.accenture.salvo;
 
 import com.accenture.salvo.games.Game;
 import com.accenture.salvo.players.Player;
+import com.accenture.salvo.salvoes.Salvo;
 import com.accenture.salvo.ships.Ship;
 
 import javax.persistence.*;
@@ -24,6 +25,9 @@ public class GamePlayer {
 
     @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
     private Set<Ship> ships = new HashSet<>();
+
+    @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
+    private Set<Salvo> salvoes = new HashSet<>();
 
 
     private Date joinDate;
@@ -70,6 +74,10 @@ public class GamePlayer {
 
     public List<Object> getGamePlayerShipsDTO() {
         return this.ships.stream().map(ship -> ship.getShipDTO()).collect(Collectors.toList());
+    }
+
+    public List<Object> getSalvoesDTO() {
+        return this.salvoes.stream().map(salvo -> salvo.getSalvoDTO()).collect(Collectors.toList());
     }
 
 
