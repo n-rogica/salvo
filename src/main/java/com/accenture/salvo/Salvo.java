@@ -14,11 +14,11 @@ public class Salvo {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name ="GamePlayer_id")
-    GamePlayer gamePlayer;
+    private GamePlayer gamePlayer;
 
     @ElementCollection
     @Column(name = "salvoLocacions")
-    List<String> salvoLocations;
+    private List<String> salvoLocations;
 
     Salvo() {}
 

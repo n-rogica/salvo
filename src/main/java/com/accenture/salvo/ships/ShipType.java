@@ -1,4 +1,4 @@
-package com.accenture.salvo;
+package com.accenture.salvo.ships;
 
 public enum ShipType {
     CRUISER,
@@ -6,4 +6,4 @@ public enum ShipType {
     BATTLESHIP,
     SUBMARINE,
     PATROL_BOAT
-};
+}

@@ -1,5 +1,12 @@
 package com.accenture.salvo;
 
+import com.accenture.salvo.games.Game;
+import com.accenture.salvo.games.GameRepository;
+import com.accenture.salvo.players.Player;
+import com.accenture.salvo.players.PlayerRepository;
+import com.accenture.salvo.ships.Ship;
+import com.accenture.salvo.ships.ShipRepository;
+import com.accenture.salvo.ships.ShipType;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,10 +29,15 @@ public class SalvoApplication {
 
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
+
+		/* =================== PLAYERS =================== */
 		Player jbauer = new Player("j.bauer@ctu.gov");
 		Player cobrian = new Player("c.obrian@ctu.gov");
 		Player talmeida = new Player("t.almeida@cut.gov");
 		Player dpalmer = new Player("d.palmer@whitehouse.gov");
+
+
+		/* =================== GAMES =================== */
 		Game gameBauerObrian = new Game();
 		cal.add(Calendar.HOUR_OF_DAY, 1);
 		Game gameBauerObrian2 = new Game(cal.getTime());
@@ -38,11 +50,17 @@ public class SalvoApplication {
 		cal.add(Calendar.HOUR_OF_DAY, 1);
 		Game gamePalmer = new Game(cal.getTime());
 
-		String[] locations = new String[]{"H2","H3","H4"};
-		List<String> arrayLocations = new ArrayList<>(Arrays.asList(locations));
-
+		/* =================== GAME PLAYERS =================== */
 		GamePlayer gp1BauerObrian = new GamePlayer(jbauer,gameBauerObrian);
 		GamePlayer gp2BauerObrian = new GamePlayer(cobrian,gameBauerObrian);
+
+		GamePlayer gp1BauerObrian2 = new GamePlayer(jbauer,gameBauerObrian2);
+		GamePlayer gp2BauerObrian2 = new GamePlayer(cobrian,gameBauerObrian2);
+
+
+		/* =================== SHIPS =================== */
+		String[] locations = new String[]{"H2","H3","H4"};
+		List<String> arrayLocations = new ArrayList<>(Arrays.asList(locations));
 		Ship ship1 = new Ship(ShipType.DESTROYER, gp1BauerObrian, arrayLocations);
 
 		locations = new String[]{"E1", "F1", "G1"};
@@ -60,9 +78,6 @@ public class SalvoApplication {
 		locations = new String[]{"F1", "F2"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
 		Ship ship5 = new Ship(ShipType.PATROL_BOAT, gp2BauerObrian, arrayLocations);
-
-		GamePlayer gp1BauerObrian2 = new GamePlayer(jbauer,gameBauerObrian2);
-		GamePlayer gp2BauerObrian2 = new GamePlayer(cobrian,gameBauerObrian2);
 
 		locations = new String[]{"B5", "C5", "D5"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));

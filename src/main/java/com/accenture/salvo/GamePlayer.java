@@ -1,6 +1,8 @@
 package com.accenture.salvo;
 
-import org.hibernate.annotations.JoinColumnOrFormula;
+import com.accenture.salvo.games.Game;
+import com.accenture.salvo.players.Player;
+import com.accenture.salvo.ships.Ship;
 
 import javax.persistence.*;
 import java.util.*;
@@ -10,7 +12,7 @@ import java.util.stream.Collectors;
 public class GamePlayer {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    long id;
+    private long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name ="player_id")
@@ -59,7 +61,7 @@ public class GamePlayer {
     }
 
     public Map<String,Object> getGamePlayerDTO() {
-        Map<String,Object>  gamePlayerDTO = new LinkedHashMap<String,Object>();
+        Map<String,Object>  gamePlayerDTO = new LinkedHashMap<>();
         gamePlayerDTO.put("id", this.id);
         gamePlayerDTO.put("player", this.player.getPlayerDTO());
         gamePlayerDTO.put("ships", this.ships.stream().map(ship -> ship.getShipDTO()).collect(Collectors.toList()));

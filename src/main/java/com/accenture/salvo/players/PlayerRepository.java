@@ -1,5 +1,6 @@
-package com.accenture.salvo;
+package com.accenture.salvo.players;
 
+import com.accenture.salvo.players.Player;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 

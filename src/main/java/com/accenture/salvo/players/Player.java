@@ -1,7 +1,7 @@
-package com.accenture.salvo;
+package com.accenture.salvo.players;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.accenture.salvo.games.Game;
+import com.accenture.salvo.GamePlayer;
 
 import javax.persistence.*;
 import java.util.*;
@@ -16,7 +16,7 @@ public class Player {
     private String userName;
 
     @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
-    Set<GamePlayer>  gamePlayers = new HashSet<GamePlayer>();
+    private Set<GamePlayer>  gamePlayers = new HashSet<>();
 
     public Player(){}
 
@@ -44,7 +44,7 @@ public class Player {
     }
 
     public Map<String, Object> getPlayerDTO() {
-        Map<String,Object>  playerDTO = new LinkedHashMap<String,Object>();
+        Map<String,Object>  playerDTO = new LinkedHashMap<>();
         playerDTO.put("id", this.id);
         playerDTO.put("email", this.userName);
         return playerDTO;

@@ -1,9 +1,8 @@
-package com.accenture.salvo;
+package com.accenture.salvo.ships;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.accenture.salvo.GamePlayer;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,7 @@ public class Ship {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "GamePlayer_id")
-    GamePlayer gamePlayer;
+    private GamePlayer gamePlayer;
 
 
     public Ship() {}
@@ -50,14 +49,11 @@ public class Ship {
 
 
     public Map<String, Object> getShipDTO() {
-        Map<String,Object>  shipDTO = new LinkedHashMap<String,Object>();
+        Map<String,Object>  shipDTO = new LinkedHashMap<>();
         shipDTO.put("type", this.shipType);
         shipDTO.put("locations", this.locations);
         return shipDTO;
     }
-
-
-
 
     public ShipType getShipType() {
         return this.shipType;

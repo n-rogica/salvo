@@ -1,12 +1,10 @@
-package com.accenture.salvo;
+package com.accenture.salvo.games;
 
+import com.accenture.salvo.GamePlayer;
+import com.accenture.salvo.players.Player;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.tomcat.jni.Local;
 
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -16,10 +14,10 @@ public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    private Date creationDate;
+    private final Date creationDate;
 
     @OneToMany(mappedBy = "game", fetch = FetchType.EAGER)
-    Set<GamePlayer> gamePlayers = new HashSet<GamePlayer>();
+    private Set<GamePlayer> gamePlayers = new HashSet<>();
 
     public Game(){
         this.creationDate = new Date();
@@ -45,7 +43,7 @@ public class Game {
 
 
      public Map<String,Object> getGameDTO() {
-        Map<String,Object>  gameDTO = new LinkedHashMap<String,Object>();
+        Map<String,Object>  gameDTO = new LinkedHashMap<>();
         gameDTO.put("id", this.id);
         gameDTO.put("created", this.creationDate);
         gameDTO.put("gamePlayers",gamePlayers.stream().map(gp -> gp.getGamePlayerDTO()).collect(Collectors.toList()));
@@ -54,7 +52,7 @@ public class Game {
 
     public Map<String,Object> getGamePovDTO(List<Object> ships) {
         //DTO que representa el estado de la partida desde el punto de vista de un jugador (el owner de los ships)
-        Map<String,Object>  gameDTO = new LinkedHashMap<String,Object>();
+        Map<String,Object>  gameDTO = new LinkedHashMap<>();
         gameDTO.put("id", this.id);
         gameDTO.put("created", this.creationDate);
         gameDTO.put("gamePlayers",gamePlayers.stream().map(gp -> gp.getGamePlayerDTO()).collect(Collectors.toList()));
