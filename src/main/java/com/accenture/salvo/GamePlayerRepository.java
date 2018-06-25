@@ -7,7 +7,5 @@ import java.util.List;
 
 @RepositoryRestResource
 public interface GamePlayerRepository extends JpaRepository<GamePlayer, Long> {
-    List<GamePlayer> findAll();
     GamePlayer findById(Long id);
-
 }

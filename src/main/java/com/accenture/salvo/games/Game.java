@@ -2,6 +2,7 @@ package com.accenture.salvo.games;
 
 import com.accenture.salvo.GamePlayer;
 import com.accenture.salvo.players.Player;
+import com.accenture.salvo.salvoes.Salvo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
@@ -57,6 +58,11 @@ public class Game {
         gameDTO.put("created", this.creationDate);
         gameDTO.put("gamePlayers",gamePlayers.stream().map(gp -> gp.getGamePlayerDTO()).collect(Collectors.toList()));
         gameDTO.put("ships", ships);
+
+        //para cada gameplayer su set de salvos y para cada salvo su dto
+        gameDTO.put("salvoes", gamePlayers.stream().flatMap(gp ->
+                gp.getSalvoes().stream().map(salvo -> salvo.getSalvoDTO())).collect(Collectors.toList()));
+
         return gameDTO;
     }
 
