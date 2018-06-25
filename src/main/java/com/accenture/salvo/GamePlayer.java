@@ -7,6 +7,7 @@ import com.accenture.salvo.ships.Ship;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Entity
@@ -64,6 +65,10 @@ public class GamePlayer {
         this.ships.add(ship);
     }
 
+    public Set<Salvo> getSalvoes() {
+        return this.salvoes;
+    }
+
     public Map<String,Object> getGamePlayerDTO() {
         Map<String,Object>  gamePlayerDTO = new LinkedHashMap<>();
         gamePlayerDTO.put("id", this.id);
@@ -76,7 +81,7 @@ public class GamePlayer {
         return this.ships.stream().map(ship -> ship.getShipDTO()).collect(Collectors.toList());
     }
 
-    public List<Object> getSalvoesDTO() {
+    public Object getSalvoesDTO() {
         return this.salvoes.stream().map(salvo -> salvo.getSalvoDTO()).collect(Collectors.toList());
     }
 

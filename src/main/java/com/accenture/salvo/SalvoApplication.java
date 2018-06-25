@@ -99,13 +99,21 @@ public class SalvoApplication {
 		Ship ship9 = new Ship(ShipType.PATROL_BOAT, g2pObraingp2BauerObrian2, arrayLocations);
 
         /* =================== SALVOES =================== */
-        locations = new String[]{"B4","B5","B6"};
+        locations = new String[]{"B5","C5","F1"};
         arrayLocations = new ArrayList<>(Arrays.asList(locations));
         Salvo salvoG1T1P1 = new Salvo(g1pBauergp1BauerObrian, 1, arrayLocations);
 
-        locations = new String[]{"E1","H3","A2"};
+        locations = new String[]{"B4","B5","B6"};
         arrayLocations = new ArrayList<>(Arrays.asList(locations));
         Salvo salvoG1T1P2 = new Salvo(g1pObriangp2BauerObrian, 1, arrayLocations);
+
+		locations = new String[]{"F2","D5"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Salvo salvoG1T2P1 = new Salvo(g1pBauergp1BauerObrian, 2, arrayLocations);
+
+		locations = new String[]{"E1","H3","A2"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Salvo salvoG1T2P2 = new Salvo(g1pObriangp2BauerObrian, 2, arrayLocations);
 
 
 
@@ -151,6 +159,8 @@ public class SalvoApplication {
 
             salvoRepository.save(salvoG1T1P1);
             salvoRepository.save(salvoG1T1P2);
+			salvoRepository.save(salvoG1T2P1);
+			salvoRepository.save(salvoG1T2P2);
 
 		};
 	}

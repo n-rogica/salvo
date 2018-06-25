@@ -37,7 +37,7 @@ public class Salvo {
         Map<String,Object> salvoDTO = new LinkedHashMap<>();
         salvoDTO.put("turn", this.turn);
         salvoDTO.put("player", this.gamePlayer.getId());
-        salvoDTO.put("salvoes", this.salvoLocations);
+        salvoDTO.put("locations", this.salvoLocations);
         return salvoDTO;
     }
 }
