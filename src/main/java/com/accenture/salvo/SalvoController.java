@@ -2,6 +2,8 @@ package com.accenture.salvo;
 
 
 import com.accenture.salvo.games.Game;
+import com.accenture.salvo.games.GamePlayer;
+import com.accenture.salvo.games.GamePlayerRepository;
 import com.accenture.salvo.games.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,11 +32,9 @@ public class SalvoController {
 
 
     @RequestMapping("game_view/{nn}")
-    public Object getGameById(@PathVariable("nn") String gamePlayerId) {
+    public Object getGameById(@PathVariable("nn") Long gamePlayerId) {
         /*metodo que devuelve el estado de un juego desde el punto de vista del usuario qeu se pasa por parametro*/
-        GamePlayer gamePlayer = gamePlayerRepository.findById(Long.parseLong(gamePlayerId));
-        Game game = gamePlayer.getGame();
-        List<Object> ships = gamePlayer.getGamePlayerShipsDTO();
-        return game.getGamePovDTO(ships);
+        GamePlayer gamePlayer = gamePlayerRepository.findById(gamePlayerId);
+        return gamePlayer.getGameplayerPovDTO();
     }
 }

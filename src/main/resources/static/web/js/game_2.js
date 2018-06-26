@@ -34,7 +34,8 @@ function loadData() {
       data.salvoes.forEach(function (salvo) {
         if (playerInfo[0].id === salvo.player) {
           salvo.locations.forEach(function (location) {
-            $('#S_' + location).html(salvo.turn)
+            $('#S_' + location).html((salvo.turn));
+            $('#S_' + location).css("color", "white");
             $('#S_' + location).addClass('salvo');
           });
         } else {
@@ -57,7 +58,7 @@ function isHit(shipLocation,salvoes,playerId) {
           if (shipLocation === location) {
               hit = true;
               $('#B_' + shipLocation).html(salvo.turn); //no encontre como cambiarle el color de la letra a esta variable
-              //para que resalte en la pantalla
+              $('#B_' + shipLocation).css("color", "white");
           }
       });
 

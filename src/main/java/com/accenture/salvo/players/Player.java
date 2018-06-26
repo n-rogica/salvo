@@ -1,8 +1,8 @@
 package com.accenture.salvo.players;
 
-import com.accenture.salvo.Score;
+import com.accenture.salvo.games.Score;
 import com.accenture.salvo.games.Game;
-import com.accenture.salvo.GamePlayer;
+import com.accenture.salvo.games.GamePlayer;
 
 import javax.persistence.*;
 import java.util.*;

@@ -1,9 +1,10 @@
-package com.accenture.salvo;
+package com.accenture.salvo.games;
 
 import com.accenture.salvo.games.Game;
 import com.accenture.salvo.players.Player;
 import com.accenture.salvo.salvoes.Salvo;
 import com.accenture.salvo.ships.Ship;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.*;
@@ -40,6 +41,7 @@ public class GamePlayer {
         this.game = game;
         this.joinDate = new Date();
     }
+    //
 
     public Player getPlayer(){
         return this.player;
@@ -69,12 +71,24 @@ public class GamePlayer {
         return this.salvoes;
     }
 
+    @JsonIgnore
     public Map<String,Object> getGamePlayerDTO() {
         Map<String,Object>  gamePlayerDTO = new LinkedHashMap<>();
         gamePlayerDTO.put("id", this.id);
         gamePlayerDTO.put("player", this.player.getPlayerDTO());
         gamePlayerDTO.put("joinDate", this.joinDate);
         return gamePlayerDTO;
+    }
+
+    public Map<String,Object> getGameplayerPovDTO() {
+        Map<String,Object>  gamePlayerDTO = new LinkedHashMap<>();
+        gamePlayerDTO.put("id", this.game.getId());
+        gamePlayerDTO.put("created", this.game.getCreationDate());
+        gamePlayerDTO.put("gamePlayers", this.game.getGamePlayersDTO());
+        gamePlayerDTO.put("ships", this.getGamePlayerShipsDTO());
+        gamePlayerDTO.put("salvoes", this.game.getGameSalvoesDTO());
+        return gamePlayerDTO;
+
     }
 
     public List<Object> getGamePlayerShipsDTO() {

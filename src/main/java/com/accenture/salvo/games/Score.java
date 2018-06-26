@@ -1,4 +1,4 @@
-package com.accenture.salvo;
+package com.accenture.salvo.games;
 
 import com.accenture.salvo.games.Game;
 import com.accenture.salvo.players.Player;
@@ -22,6 +22,8 @@ public class Score {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "player_id")
     private Player player;
+
+
 
 
 

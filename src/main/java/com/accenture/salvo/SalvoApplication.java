@@ -1,6 +1,8 @@
 package com.accenture.salvo;
 
 import com.accenture.salvo.games.Game;
+import com.accenture.salvo.games.GamePlayer;
+import com.accenture.salvo.games.GamePlayerRepository;
 import com.accenture.salvo.games.GameRepository;
 import com.accenture.salvo.players.Player;
 import com.accenture.salvo.players.PlayerRepository;
@@ -27,8 +29,8 @@ public class SalvoApplication {
 
 	@Bean
 	public CommandLineRunner initData(PlayerRepository playerRepository, GameRepository gameRepository,
-                                      GamePlayerRepository gamePlayerRepository, ShipRepository shipRepository,
-                                      SalvoRepository salvoRepository){
+									  GamePlayerRepository gamePlayerRepository, ShipRepository shipRepository,
+									  SalvoRepository salvoRepository){
 
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
@@ -114,6 +116,9 @@ public class SalvoApplication {
 		locations = new String[]{"E1","H3","A2"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
 		Salvo salvoG1T2P2 = new Salvo(g1pObriangp2BauerObrian, 2, arrayLocations);
+
+		/* =================== GAMES =================== */
+
 
 
 

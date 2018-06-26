@@ -1,6 +1,6 @@
 package com.accenture.salvo.ships;
 
-import com.accenture.salvo.GamePlayer;
+import com.accenture.salvo.games.GamePlayer;
 
 import javax.persistence.*;
 import java.util.LinkedHashMap;

@@ -1,9 +1,6 @@
 package com.accenture.salvo.games;
 
-import com.accenture.salvo.GamePlayer;
-import com.accenture.salvo.Score;
 import com.accenture.salvo.players.Player;
-import com.accenture.salvo.salvoes.Salvo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
@@ -57,23 +54,17 @@ public class Game {
         return gameDTO;
      }
 
-    public Map<String,Object> getGamePovDTO(List<Object> ships) {
-        //DTO que representa el estado de la partida desde el punto de vista de un jugador (el owner de los ships)
-        Map<String,Object>  gameDTO = new LinkedHashMap<>();
-        gameDTO.put("id", this.id);
-        gameDTO.put("created", this.creationDate);
-        gameDTO.put("gamePlayers",gamePlayers.stream().map(gp -> gp.getGamePlayerDTO()).collect(Collectors.toList()));
-        gameDTO.put("ships", ships);
-
-        //para cada gameplayer su set de salvos y para cada salvo su dto
-        gameDTO.put("salvoes", gamePlayers.stream().flatMap(gp ->
-                gp.getSalvoes().stream().map(salvo -> salvo.getSalvoDTO())).collect(Collectors.toList()));
-
-        return gameDTO;
+    public Object getGameSalvoesDTO() {
+      return gamePlayers.stream().flatMap(gp ->
+                gp.getSalvoes().stream().map(salvo -> salvo.getSalvoDTO())).collect(Collectors.toList());
     }
 
 
-
-
-
+    public long getId() {
+        return this.id;
+    }
+    @JsonIgnore
+    public Object getGamePlayersDTO() {
+        return this.gamePlayers.stream().map(gp -> gp.getGamePlayerDTO()).collect(Collectors.toList());
+    }
 }
