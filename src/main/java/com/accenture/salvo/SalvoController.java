@@ -50,7 +50,7 @@ public class SalvoController {
     @RequestMapping("game_view/{nn}")
     public Object getGameById(@PathVariable("nn") Long gamePlayerId) {
         /*metodo que devuelve el estado de un juego desde el punto de vista del usuario qeu se pasa por parametro*/
-        GamePlayer gamePlayer = gamePlayerRepository.findById(gamePlayerId);
+        GamePlayer gamePlayer = gamePlayerRepository.findOne(gamePlayerId);
         return gamePlayer.getGameplayerPovDTO();
     }
 }

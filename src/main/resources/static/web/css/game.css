@@ -4,12 +4,11 @@
 
 .ship-piece-hited{
     background-color: darkmagenta;
+    color: white;
 }
 
 .salvo{
     background-color: crimson;
+    color: white;
 }
 
-.text{
-    text-color: white;
-}
