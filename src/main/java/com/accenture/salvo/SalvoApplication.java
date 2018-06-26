@@ -1,9 +1,6 @@
 package com.accenture.salvo;
 
-import com.accenture.salvo.games.Game;
-import com.accenture.salvo.games.GamePlayer;
-import com.accenture.salvo.games.GamePlayerRepository;
-import com.accenture.salvo.games.GameRepository;
+import com.accenture.salvo.games.*;
 import com.accenture.salvo.players.Player;
 import com.accenture.salvo.players.PlayerRepository;
 import com.accenture.salvo.salvoes.Salvo;
@@ -30,7 +27,7 @@ public class SalvoApplication {
 	@Bean
 	public CommandLineRunner initData(PlayerRepository playerRepository, GameRepository gameRepository,
 									  GamePlayerRepository gamePlayerRepository, ShipRepository shipRepository,
-									  SalvoRepository salvoRepository){
+									  SalvoRepository salvoRepository, ScoreRepository scoreRepository){
 
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
@@ -61,6 +58,9 @@ public class SalvoApplication {
 
 		GamePlayer g2pBauergp1BauerObrian2 = new GamePlayer(jbauer,gameBauerObrian2);
 		GamePlayer g2pObraingp2BauerObrian2 = new GamePlayer(cobrian,gameBauerObrian2);
+
+		GamePlayer g3pObriangp1ObrianAlmeida = new GamePlayer(cobrian, gameObrianAlmeida);
+		GamePlayer g3pAlmeidagp2ObrianAlmeida = new GamePlayer(talmeida, gameObrianAlmeida);
 
 
 		/* =================== SHIPS =================== */
@@ -96,9 +96,30 @@ public class SalvoApplication {
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
 		Ship ship8 = new Ship(ShipType.SUBMARINE, g2pObraingp2BauerObrian2, arrayLocations);
 
-		locations = new String[]{"G6","H7"};
+		locations = new String[]{"G6","H6"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
 		Ship ship9 = new Ship(ShipType.PATROL_BOAT, g2pObraingp2BauerObrian2, arrayLocations);
+
+		locations = new String[]{"B5","C5","D5"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Ship ship10 = new Ship(ShipType.DESTROYER, g3pObriangp1ObrianAlmeida, arrayLocations);
+
+		locations = new String[]{"C6", "C7"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Ship ship11 = new Ship(ShipType.PATROL_BOAT, g3pObriangp1ObrianAlmeida, arrayLocations);
+
+		locations = new String[]{"A2","A3","A4"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Ship ship12 = new Ship(ShipType.SUBMARINE, g3pAlmeidagp2ObrianAlmeida, arrayLocations);
+
+		locations = new String[]{"G6","H6"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Ship ship13 = new Ship(ShipType.PATROL_BOAT, g3pAlmeidagp2ObrianAlmeida, arrayLocations);
+
+
+
+
+
 
         /* =================== SALVOES =================== */
         locations = new String[]{"B5","C5","F1"};
@@ -117,10 +138,51 @@ public class SalvoApplication {
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
 		Salvo salvoG1T2P2 = new Salvo(g1pObriangp2BauerObrian, 2, arrayLocations);
 
+		locations = new String[]{"A2","A4","A6"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Salvo salvoG2T1P1 = new Salvo(g2pBauergp1BauerObrian2, 1, arrayLocations);
+
+		locations = new String[]{"B5","D5","C7"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Salvo salvoG2T1P2 = new Salvo(g2pObraingp2BauerObrian2, 1, arrayLocations);
+
+		locations = new String[]{"A3","H6"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Salvo salvoG2T2P1 = new Salvo(g2pBauergp1BauerObrian2, 2, arrayLocations);
+
+		locations = new String[]{"C5","C6"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Salvo salvoG2T2P2 = new Salvo(g2pObraingp2BauerObrian2, 2, arrayLocations);
+
+		locations = new String[]{"G6","H6","A4"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Salvo salvoG3T1P1 = new Salvo(g3pObriangp1ObrianAlmeida, 1, arrayLocations);
+
+		locations = new String[]{"H1","H2","H3"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Salvo salvoG3T1P2 = new Salvo(g3pAlmeidagp2ObrianAlmeida, 1, arrayLocations);
+
+		locations = new String[]{"A2","A3","D8"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Salvo salvoG3T2P1 = new Salvo(g3pObriangp1ObrianAlmeida, 2, arrayLocations);
+
+		locations = new String[]{"E1","F2","G3"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Salvo salvoG3T2P2 = new Salvo(g3pAlmeidagp2ObrianAlmeida, 2, arrayLocations);
+
+
+
 		/* =================== GAMES =================== */
 
+		Score scoreGame1Bauer = new Score(1,gameBauerObrian, jbauer);
+		Score scoreGame1Obrian = new Score(0,gameBauerObrian, cobrian);
 
+		Score scoreGame2Bauer = new Score(0.5,gameBauerObrian2, jbauer);
+		Score scoreGame2Obrian = new Score(0.5,gameBauerObrian2, cobrian);
 
+		//ESTO EN REALIDAD NO CORRESPONDE A ESTE GAME
+		Score scoreGame3Obrian = new Score(-1,gameObrianAlmeida,cobrian);
+		Score scoreGame3Almeida = new Score(-1,gameObrianAlmeida, talmeida);
 
 		return (args) -> {
 			playerRepository.save(jbauer);
@@ -140,8 +202,8 @@ public class SalvoApplication {
             gamePlayerRepository.save(g2pBauergp1BauerObrian2);
 			gamePlayerRepository.save(g2pObraingp2BauerObrian2);
 
-			gamePlayerRepository.save(new GamePlayer(cobrian,gameObrianAlmeida));
-			gamePlayerRepository.save(new GamePlayer(talmeida,gameObrianAlmeida));
+			gamePlayerRepository.save(g3pObriangp1ObrianAlmeida);
+			gamePlayerRepository.save(g3pAlmeidagp2ObrianAlmeida);
 
 			gamePlayerRepository.save(new GamePlayer(jbauer,gameBauerObrian3));
 			gamePlayerRepository.save(new GamePlayer(cobrian,gameBauerObrian3));
@@ -161,11 +223,31 @@ public class SalvoApplication {
 			shipRepository.save(ship7);
 			shipRepository.save(ship8);
 			shipRepository.save(ship9);
+			shipRepository.save(ship10);
+			shipRepository.save(ship11);
+			shipRepository.save(ship12);
+			shipRepository.save(ship13);
 
             salvoRepository.save(salvoG1T1P1);
             salvoRepository.save(salvoG1T1P2);
 			salvoRepository.save(salvoG1T2P1);
 			salvoRepository.save(salvoG1T2P2);
+			salvoRepository.save(salvoG2T1P1);
+			salvoRepository.save(salvoG2T1P2);
+			salvoRepository.save(salvoG2T2P1);
+			salvoRepository.save(salvoG2T2P2);
+			salvoRepository.save(salvoG3T1P1);
+			salvoRepository.save(salvoG3T1P2);
+			salvoRepository.save(salvoG3T2P1);
+			salvoRepository.save(salvoG3T2P2);
+
+			scoreRepository.save(scoreGame1Bauer);
+			scoreRepository.save(scoreGame1Obrian);
+			scoreRepository.save(scoreGame2Bauer);
+			scoreRepository.save(scoreGame2Obrian);
+			scoreRepository.save(scoreGame3Obrian);
+			scoreRepository.save(scoreGame3Almeida);
+
 
 		};
 	}

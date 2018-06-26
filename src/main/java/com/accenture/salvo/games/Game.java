@@ -19,7 +19,7 @@ public class Game {
     private Set<GamePlayer> gamePlayers = new HashSet<>();
 
     @OneToMany(mappedBy = "game", fetch = FetchType.EAGER)
-    private Set<Score> score = new HashSet<>();
+    private Set<Score> scores = new HashSet<>();
 
 
 
@@ -41,6 +41,10 @@ public class Game {
         return this.gamePlayers.stream().map(player -> player.getPlayer()).collect(Collectors.toList());
     }
 
+    public Set<Score> getScores() {
+        return this.scores;
+    }
+
     public void addGamePlayer(GamePlayer gamePlayer){
         this.gamePlayers.add(gamePlayer);
     }
@@ -51,6 +55,7 @@ public class Game {
         gameDTO.put("id", this.id);
         gameDTO.put("created", this.creationDate);
         gameDTO.put("gamePlayers",gamePlayers.stream().map(gp -> gp.getGamePlayerDTO()).collect(Collectors.toList()));
+        gameDTO.put("scores", scores.stream().map(Score::getScoreDTO).collect(Collectors.toList()));
         return gameDTO;
      }
 
@@ -58,7 +63,6 @@ public class Game {
       return gamePlayers.stream().flatMap(gp ->
                 gp.getSalvoes().stream().map(salvo -> salvo.getSalvoDTO())).collect(Collectors.toList());
     }
-
 
     public long getId() {
         return this.id;
