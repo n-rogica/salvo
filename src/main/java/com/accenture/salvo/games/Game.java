@@ -1,6 +1,7 @@
 package com.accenture.salvo.games;
 
 import com.accenture.salvo.GamePlayer;
+import com.accenture.salvo.Score;
 import com.accenture.salvo.players.Player;
 import com.accenture.salvo.salvoes.Salvo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -19,6 +20,11 @@ public class Game {
 
     @OneToMany(mappedBy = "game", fetch = FetchType.EAGER)
     private Set<GamePlayer> gamePlayers = new HashSet<>();
+
+    @OneToMany(mappedBy = "game", fetch = FetchType.EAGER)
+    private Set<Score> score = new HashSet<>();
+
+
 
     public Game(){
         this.creationDate = new Date();

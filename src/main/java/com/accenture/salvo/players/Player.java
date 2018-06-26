@@ -1,5 +1,6 @@
 package com.accenture.salvo.players;
 
+import com.accenture.salvo.Score;
 import com.accenture.salvo.games.Game;
 import com.accenture.salvo.GamePlayer;
 
@@ -17,6 +18,12 @@ public class Player {
 
     @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
     private Set<GamePlayer>  gamePlayers = new HashSet<>();
+
+    @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
+    private Set<Score>  scores = new HashSet<>();
+
+
+
 
     public Player(){}
 
