@@ -114,4 +114,8 @@ public class Player {
         }
         return acum;
     }
+
+    public long getId() {
+        return this.id;
+    }
 }

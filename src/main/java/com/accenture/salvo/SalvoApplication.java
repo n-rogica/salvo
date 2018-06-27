@@ -178,7 +178,7 @@ public class SalvoApplication {
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
 		Ship ship24 = new Ship(ShipType.DESTROYER, g8pKbauergp1KbauerAlmeida, arrayLocations);
 
-		locations = new String[]{"C6","D7"};
+		locations = new String[]{"C6","C7"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
 		Ship ship25 = new Ship(ShipType.PATROL_BOAT, g8pKbauergp1KbauerAlmeida, arrayLocations);
 
@@ -189,6 +189,8 @@ public class SalvoApplication {
 		locations = new String[]{"G6","H6"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
 		Ship ship27 = new Ship(ShipType.PATROL_BOAT, g8pAlmeidagp2KbauerAlmeida, arrayLocations);
+
+
 
 
         /* =================== SALVOES =================== */
@@ -240,6 +242,42 @@ public class SalvoApplication {
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
 		Salvo salvoG3T2P2 = new Salvo(g3pAlmeidagp2ObrianAlmeida, 2, arrayLocations);
 
+		locations = new String[]{"A3","A4","F7"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Salvo salvoG4T1P1 = new Salvo(g4pObriangp1ObrianBauer, 1, arrayLocations);
+
+		locations = new String[]{"B5","C6","H1"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Salvo salvoG4T1P2 = new Salvo(g4pBauergp2ObrianBauer, 1, arrayLocations);
+
+		locations = new String[]{"A2","G6","H6"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Salvo salvoG4T2P1 = new Salvo(g4pObriangp1ObrianBauer, 2, arrayLocations);
+
+		locations = new String[]{"C5","C7","D5"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Salvo salvoG4T2P2 = new Salvo(g4pBauergp2ObrianBauer, 2, arrayLocations);
+
+		locations = new String[]{"A1","A2","A3"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Salvo salvoG5T1P1 = new Salvo(g5pAlmeidagp1AlmeidaBauer, 1, arrayLocations);
+
+		locations = new String[]{"B5","B6","C7"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Salvo salvoG5T1P2 = new Salvo(g5pBauergp2AlmeidaBauer, 1, arrayLocations);
+
+		locations = new String[]{"G6","G7","G8"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Salvo salvoG5T2P1 = new Salvo(g5pAlmeidagp1AlmeidaBauer, 2, arrayLocations);
+
+		locations = new String[]{"C6","D6","E6"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Salvo salvoG5T2P2 = new Salvo(g5pBauergp2AlmeidaBauer, 2, arrayLocations);
+
+		locations = new String[]{"H1","H8"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Salvo salvoG5T3P2 = new Salvo(g5pBauergp2AlmeidaBauer, 3, arrayLocations);
+
 
 
 		/* =================== GAMES =================== */
@@ -250,9 +288,23 @@ public class SalvoApplication {
 		Score scoreGame2Bauer = new Score(0.5,gameBauerObrian2, jbauer);
 		Score scoreGame2Obrian = new Score(0.5,gameBauerObrian2, cobrian);
 
-		//ESTO EN REALIDAD NO CORRESPONDE A ESTE GAME
-		Score scoreGame3Obrian = new Score(-1,gameObrianAlmeida,cobrian);
-		Score scoreGame3Almeida = new Score(-1,gameObrianAlmeida, talmeida);
+		Score scoreGame3Obrian = new Score(1,gameObrianAlmeida,cobrian);
+		Score scoreGame3Almeida = new Score(0,gameObrianAlmeida, talmeida);
+
+		Score scoreGame4Obrian = new Score(0.5,gameObrianBauer,cobrian);
+		Score scoreGame4Bauer = new Score(0.5,gameObrianBauer, jbauer);
+
+		Score scoreGame5Almeida = new Score(-1,gameAlmeidaBauer,talmeida);
+		Score scoreGame5Bauer = new Score(-1,gameAlmeidaBauer, jbauer);
+
+		Score scoreGame6Kbauer = new Score(-1, gameKBauer, kbauer);
+
+		Score scoreGame7Almeida = new Score(-1, gameAlmeida, talmeida);
+
+		Score scoreGame8Kbauer = new Score(-1, gameKbaueAlmeida, kbauer);
+		Score scoreGame8Almeida = new Score(-1, gameKbaueAlmeida, talmeida);
+
+
 
 		return (args) -> {
 			playerRepository.save(jbauer);
@@ -333,6 +385,16 @@ public class SalvoApplication {
 			salvoRepository.save(salvoG3T1P2);
 			salvoRepository.save(salvoG3T2P1);
 			salvoRepository.save(salvoG3T2P2);
+			salvoRepository.save(salvoG4T1P1);
+			salvoRepository.save(salvoG4T1P2);
+			salvoRepository.save(salvoG4T2P1);
+			salvoRepository.save(salvoG4T2P2);
+			salvoRepository.save(salvoG5T1P1);
+			salvoRepository.save(salvoG5T1P2);
+			salvoRepository.save(salvoG5T2P1);
+			salvoRepository.save(salvoG5T2P2);
+			salvoRepository.save(salvoG5T3P2);
+
 
 			scoreRepository.save(scoreGame1Bauer);
 			scoreRepository.save(scoreGame1Obrian);
@@ -340,8 +402,14 @@ public class SalvoApplication {
 			scoreRepository.save(scoreGame2Obrian);
 			scoreRepository.save(scoreGame3Obrian);
 			scoreRepository.save(scoreGame3Almeida);
-
-
+			scoreRepository.save(scoreGame4Obrian);
+			scoreRepository.save(scoreGame4Bauer);
+			scoreRepository.save(scoreGame5Almeida);
+			scoreRepository.save(scoreGame5Bauer);
+			scoreRepository.save(scoreGame6Kbauer);
+			scoreRepository.save(scoreGame7Almeida);
+			scoreRepository.save(scoreGame8Kbauer);
+			scoreRepository.save(scoreGame8Almeida);
 		};
 	}
 }
