@@ -35,8 +35,9 @@ public class SalvoApplication {
 		/* =================== PLAYERS =================== */
 		Player jbauer = new Player("j.bauer@ctu.gov");
 		Player cobrian = new Player("c.obrian@ctu.gov");
+		Player kbauer = new Player("kim_bauer@gmail.com");
 		Player talmeida = new Player("t.almeida@cut.gov");
-		Player dpalmer = new Player("d.palmer@whitehouse.gov");
+
 
 
 		/* =================== GAMES ===================== */
@@ -46,11 +47,15 @@ public class SalvoApplication {
 		cal.add(Calendar.HOUR_OF_DAY, 1);
 		Game gameObrianAlmeida = new Game(cal.getTime());
 		cal.add(Calendar.HOUR_OF_DAY, 1);
-		Game gameBauerObrian3 = new Game(cal.getTime());
+		Game gameObrianBauer = new Game(cal.getTime());
 		cal.add(Calendar.HOUR_OF_DAY, 1);
 		Game gameAlmeidaBauer = new Game(cal.getTime());
 		cal.add(Calendar.HOUR_OF_DAY, 1);
-		Game gamePalmer = new Game(cal.getTime());
+		Game gameKBauer = new Game(cal.getTime());
+		cal.add(Calendar.HOUR_OF_DAY, 1);
+		Game gameAlmeida = new Game(cal.getTime());
+		cal.add(Calendar.HOUR_OF_DAY, 1);
+		Game gameKbaueAlmeida = new Game(cal.getTime());
 
 		/* =================== GAME PLAYERS =================== */
 		GamePlayer g1pBauergp1BauerObrian = new GamePlayer(jbauer,gameBauerObrian);
@@ -61,6 +66,19 @@ public class SalvoApplication {
 
 		GamePlayer g3pObriangp1ObrianAlmeida = new GamePlayer(cobrian, gameObrianAlmeida);
 		GamePlayer g3pAlmeidagp2ObrianAlmeida = new GamePlayer(talmeida, gameObrianAlmeida);
+
+		GamePlayer g4pObriangp1ObrianBauer = new GamePlayer(cobrian, gameObrianBauer);
+		GamePlayer g4pBauergp2ObrianBauer = new GamePlayer(jbauer, gameObrianBauer);
+
+		GamePlayer g5pAlmeidagp1AlmeidaBauer = new GamePlayer(talmeida, gameAlmeidaBauer);
+		GamePlayer g5pBauergp2AlmeidaBauer = new GamePlayer(jbauer, gameAlmeidaBauer);
+
+		GamePlayer g6pKbauergp1Kbauer = new GamePlayer(kbauer, gameKBauer);
+
+		GamePlayer g7pAlmeidagp1Almeida = new GamePlayer(talmeida, gameAlmeida);
+
+		GamePlayer g8pKbauergp1KbauerAlmeida = new GamePlayer(kbauer, gameKbaueAlmeida);
+		GamePlayer g8pAlmeidagp2KbauerAlmeida = new GamePlayer(talmeida, gameKbaueAlmeida);
 
 
 		/* =================== SHIPS =================== */
@@ -116,9 +134,61 @@ public class SalvoApplication {
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
 		Ship ship13 = new Ship(ShipType.PATROL_BOAT, g3pAlmeidagp2ObrianAlmeida, arrayLocations);
 
+		locations = new String[]{"B5","C5","D5"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Ship ship14 = new Ship(ShipType.DESTROYER, g4pObriangp1ObrianBauer, arrayLocations);
 
+		locations = new String[]{"C6","C7"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Ship ship15 = new Ship(ShipType.PATROL_BOAT, g4pObriangp1ObrianBauer, arrayLocations);
 
+		locations = new String[]{"A2","A3","A4"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Ship ship16 = new Ship(ShipType.SUBMARINE, g4pBauergp2ObrianBauer, arrayLocations);
 
+		locations = new String[]{"G6","H6"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Ship ship17 = new Ship(ShipType.PATROL_BOAT, g4pBauergp2ObrianBauer, arrayLocations);
+
+		locations = new String[]{"B5","C5","D5"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Ship ship18 = new Ship(ShipType.DESTROYER, g5pAlmeidagp1AlmeidaBauer, arrayLocations);
+
+		locations = new String[]{"C6","C7"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Ship ship19 = new Ship(ShipType.PATROL_BOAT, g5pAlmeidagp1AlmeidaBauer, arrayLocations);
+
+		locations = new String[]{"A2","A3","A4"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Ship ship20 = new Ship(ShipType.SUBMARINE, g5pBauergp2AlmeidaBauer, arrayLocations);
+
+		locations = new String[]{"G6","H6"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Ship ship21 = new Ship(ShipType.PATROL_BOAT, g5pBauergp2AlmeidaBauer, arrayLocations);
+
+		locations = new String[]{"B5","C5","D5"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Ship ship22 = new Ship(ShipType.DESTROYER, g6pKbauergp1Kbauer, arrayLocations);
+
+		locations = new String[]{"C6","D7"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Ship ship23 = new Ship(ShipType.PATROL_BOAT, g6pKbauergp1Kbauer, arrayLocations);
+
+		locations = new String[]{"B5","C5","D5"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Ship ship24 = new Ship(ShipType.DESTROYER, g8pKbauergp1KbauerAlmeida, arrayLocations);
+
+		locations = new String[]{"C6","D7"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Ship ship25 = new Ship(ShipType.PATROL_BOAT, g8pKbauergp1KbauerAlmeida, arrayLocations);
+
+		locations = new String[]{"A2","A3","A4"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Ship ship26 = new Ship(ShipType.SUBMARINE, g8pAlmeidagp2KbauerAlmeida, arrayLocations);
+
+		locations = new String[]{"G6","H6"};
+		arrayLocations = new ArrayList<>(Arrays.asList(locations));
+		Ship ship27 = new Ship(ShipType.PATROL_BOAT, g8pAlmeidagp2KbauerAlmeida, arrayLocations);
 
 
         /* =================== SALVOES =================== */
@@ -188,13 +258,15 @@ public class SalvoApplication {
 			playerRepository.save(jbauer);
 			playerRepository.save(cobrian);
 			playerRepository.save(talmeida);
-			playerRepository.save(dpalmer);
+			playerRepository.save(kbauer);
 			gameRepository.save(gameBauerObrian);
 			gameRepository.save(gameBauerObrian2);
 			gameRepository.save(gameObrianAlmeida);
-			gameRepository.save(gameBauerObrian3);
+			gameRepository.save(gameObrianBauer);
 			gameRepository.save(gameAlmeidaBauer);
-			gameRepository.save(gamePalmer);
+			gameRepository.save(gameKBauer);
+			gameRepository.save(gameAlmeida);
+			gameRepository.save(gameKbaueAlmeida);
 
 			gamePlayerRepository.save(g1pBauergp1BauerObrian);
             gamePlayerRepository.save(g1pObriangp2BauerObrian);
@@ -205,13 +277,18 @@ public class SalvoApplication {
 			gamePlayerRepository.save(g3pObriangp1ObrianAlmeida);
 			gamePlayerRepository.save(g3pAlmeidagp2ObrianAlmeida);
 
-			gamePlayerRepository.save(new GamePlayer(jbauer,gameBauerObrian3));
-			gamePlayerRepository.save(new GamePlayer(cobrian,gameBauerObrian3));
+			gamePlayerRepository.save(g4pObriangp1ObrianBauer);
+			gamePlayerRepository.save(g4pBauergp2ObrianBauer);
 
-			gamePlayerRepository.save(new GamePlayer(talmeida,gameAlmeidaBauer));
-			gamePlayerRepository.save(new GamePlayer(jbauer,gameAlmeidaBauer));
+			gamePlayerRepository.save(g5pAlmeidagp1AlmeidaBauer);
+			gamePlayerRepository.save(g5pBauergp2AlmeidaBauer);
 
-			gamePlayerRepository.save(new GamePlayer(dpalmer,gamePalmer));
+			gamePlayerRepository.save(g6pKbauergp1Kbauer);
+
+			gamePlayerRepository.save(g7pAlmeidagp1Almeida);
+
+			gamePlayerRepository.save(g8pKbauergp1KbauerAlmeida);
+			gamePlayerRepository.save(g8pAlmeidagp2KbauerAlmeida);
 
 
 			shipRepository.save(ship1);
@@ -227,6 +304,22 @@ public class SalvoApplication {
 			shipRepository.save(ship11);
 			shipRepository.save(ship12);
 			shipRepository.save(ship13);
+			shipRepository.save(ship14);
+			shipRepository.save(ship15);
+			shipRepository.save(ship16);
+			shipRepository.save(ship17);
+			shipRepository.save(ship18);
+			shipRepository.save(ship19);
+			shipRepository.save(ship20);
+			shipRepository.save(ship21);
+			shipRepository.save(ship22);
+			shipRepository.save(ship23);
+			shipRepository.save(ship24);
+			shipRepository.save(ship25);
+			shipRepository.save(ship26);
+			shipRepository.save(ship27);
+
+
 
             salvoRepository.save(salvoG1T1P1);
             salvoRepository.save(salvoG1T1P2);
