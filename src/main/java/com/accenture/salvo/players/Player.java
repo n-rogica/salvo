@@ -7,6 +7,7 @@ import com.accenture.salvo.games.GamePlayer;
 import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 public class Player {
@@ -63,10 +64,10 @@ public class Player {
 
     private Object getScoreResumeDTO() {
         Map<String,Object> scoreResume = new LinkedHashMap<>();
-        double acumWon = this.getWonGames();
+        long acumWon = this.getWonGames();
         double acumTie = this.getTiedGames();
         double acumLost = this.getLostGames();
-        double acumScore = this.getTotalScore();
+        double acumScore = 1 * acumWon + 0.5 * acumTie;
 
         scoreResume.put("total", acumScore);
         scoreResume.put("won", acumWon);
@@ -75,43 +76,18 @@ public class Player {
         return scoreResume;
     }
 
-    private double getWonGames() {
-        int acum = 0;
-        for (Score score: scores) {
-            if (score.getScore() == 1) {
-                acum+=1;
-            }
-        }
+    private long getWonGames() {
+        long acum = scores.stream().filter(score -> score.getScore() == 1).count();
         return acum;
     }
 
-    private double getTiedGames() {
-        int acum = 0;
-        for (Score score: scores) {
-            if (score.getScore() == 0.5) {
-                acum+=1;
-            }
-        }
+    private long getTiedGames() {
+        long acum = scores.stream().filter(score -> score.getScore() == 0.5).count();
         return acum;
     }
 
     private double getLostGames() {
-        int acum = 0;
-        for (Score score: scores) {
-            if (score.getScore() == 0) {
-                acum+=1;
-            }
-        }
-        return acum;
-    }
-
-    private double getTotalScore() {
-        double acum = 0;
-        for (Score score: scores) {
-            if (score.finishedGame()) {
-                acum+= score.getScore();
-            }
-        }
+        long acum = scores.stream().filter(score -> score.getScore() == 0).count();
         return acum;
     }
 

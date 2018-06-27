@@ -37,13 +37,11 @@ public class SalvoController {
         return games.stream().map(Game::getGameDTO).collect(Collectors.toList());
     }
 
-    @RequestMapping("leaderBoard")
-    public Object getLeaderBoard() {
+    @RequestMapping("/leaderBoard")
+    public List<Object> getLeaderBoard() {
         List<Player> players = playerRepository.findAll();
         List<Object> leaderBoard = players.stream().map(player -> player.getScoreHistoryDTO()).collect(Collectors.toList());
         return leaderBoard;
-
-
     }
 
 
