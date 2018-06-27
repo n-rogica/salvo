@@ -16,6 +16,7 @@ public class Player {
     @GeneratedValue(strategy = GenerationType.AUTO )
     private long id;
     private String userName;
+    private String password;
 
     @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
     private Set<GamePlayer>  gamePlayers = new HashSet<>();
@@ -25,8 +26,9 @@ public class Player {
 
     public Player(){}
 
-    public Player(String userName) {
+    public Player(String userName, String password) {
         this.userName = userName;
+        this.password = password;
     }
 
     public String getUserName(){
@@ -35,6 +37,14 @@ public class Player {
 
     public void addGamePlayer(GamePlayer gamePlayer){
         this.gamePlayers.add(gamePlayer);
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
 
@@ -67,7 +77,7 @@ public class Player {
         long acumWon = this.getWonGames();
         double acumTie = this.getTiedGames();
         double acumLost = this.getLostGames();
-        double acumScore = 1 * acumWon + 0.5 * acumTie;
+        double acumScore = scores.stream().filter(score -> score.getScore() != -1).mapToDouble(score -> score.getScore()).sum();
 
         scoreResume.put("total", acumScore);
         scoreResume.put("won", acumWon);

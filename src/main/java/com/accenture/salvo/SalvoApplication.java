@@ -8,15 +8,26 @@ import com.accenture.salvo.salvoes.SalvoRepository;
 import com.accenture.salvo.ships.Ship;
 import com.accenture.salvo.ships.ShipRepository;
 import com.accenture.salvo.ships.ShipType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.*;
 
 @SpringBootApplication
-public class SalvoApplication {
+public class SalvoApplication extends SpringBootServletInitializer {
 
 
 
@@ -33,10 +44,10 @@ public class SalvoApplication {
 		cal.setTime(new Date());
 
 		/* =================== PLAYERS =================== */
-		Player jbauer = new Player("j.bauer@ctu.gov");
-		Player cobrian = new Player("c.obrian@ctu.gov");
-		Player kbauer = new Player("kim_bauer@gmail.com");
-		Player talmeida = new Player("t.almeida@cut.gov");
+		Player jbauer = new Player("j.bauer@ctu.gov", "24");
+		Player cobrian = new Player("c.obrian@ctu.gov", "42");
+		Player kbauer = new Player("kim_bauer@gmail.com", "kb");
+		Player talmeida = new Player("t.almeida@cut.gov", "mole");
 
 
 
@@ -413,5 +424,40 @@ public class SalvoApplication {
 		};
 	}
 }
+
+
+@EnableWebSecurity
+@Configuration
+class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
+
+	@Autowired
+	PlayerRepository playerRepository;
+
+  	@Bean
+	UserDetailsService getUserDetailsService()  throws Exception {
+  		return new UserDetailsService() {
+			@Override
+			public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+				Player player = playerRepository.findByUserName(username);
+				if (player != null) {
+					return new User(player.getUserName(),player.getPassword(),AuthorityUtils.createAuthorityList("USER"));
+				} else {
+					throw new UsernameNotFoundException("Unknown user: " + username);
+				}
+			}
+		};
+	  }
+
+
+
+
+  }
+
+
+
+
+
+
+
 
 

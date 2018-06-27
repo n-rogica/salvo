@@ -25,8 +25,6 @@ public class Score {
     @JoinColumn(name = "player_id")
     private Player player;
 
-
-
     public Score(){}
 
     public Score(double score, Game game, Player player) {
@@ -37,7 +35,6 @@ public class Score {
         } else {
             this.finishDate = null;
         }
-
         this.game = game;
         this.player = player;
     }
