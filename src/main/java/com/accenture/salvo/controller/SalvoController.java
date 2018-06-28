@@ -1,25 +1,24 @@
-package com.accenture.salvo;
+package com.accenture.salvo.controller;
 
 
-import com.accenture.salvo.games.Game;
-import com.accenture.salvo.games.GamePlayer;
-import com.accenture.salvo.games.GamePlayerRepository;
-import com.accenture.salvo.games.GameRepository;
-import com.accenture.salvo.players.Player;
-import com.accenture.salvo.players.PlayerRepository;
+import com.accenture.salvo.model.games.Game;
+import com.accenture.salvo.model.games.GamePlayer;
+import com.accenture.salvo.repository.GamePlayerRepository;
+import com.accenture.salvo.repository.GameRepository;
+import com.accenture.salvo.model.players.Player;
+import com.accenture.salvo.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
 public class SalvoController {
+
 
     @Autowired
     GameRepository gameRepository;

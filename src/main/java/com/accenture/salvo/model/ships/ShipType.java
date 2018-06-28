@@ -1,4 +1,4 @@
-package com.accenture.salvo.ships;
+package com.accenture.salvo.model.ships;
 
 public enum ShipType {
     CRUISER,

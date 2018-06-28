@@ -1,10 +1,8 @@
-package com.accenture.salvo.players;
+package com.accenture.salvo.repository;
 
-import com.accenture.salvo.players.Player;
+import com.accenture.salvo.model.players.Player;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-
-import java.util.List;
 
 @RepositoryRestResource
 public interface PlayerRepository extends JpaRepository<Player, Long> {

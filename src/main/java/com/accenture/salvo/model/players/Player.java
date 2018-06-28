@@ -1,13 +1,12 @@
-package com.accenture.salvo.players;
+package com.accenture.salvo.model.players;
 
-import com.accenture.salvo.games.Score;
-import com.accenture.salvo.games.Game;
-import com.accenture.salvo.games.GamePlayer;
+import com.accenture.salvo.model.games.GamePlayer;
+import com.accenture.salvo.model.games.Score;
+import com.accenture.salvo.model.games.Game;
 
 import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Entity
 public class Player {
@@ -66,7 +65,6 @@ public class Player {
 
     public Object getScoreHistoryDTO() {
         Map<String,Object> scoreHistoryDTO = new LinkedHashMap<>();
-
         scoreHistoryDTO.put("name", this.userName);
         scoreHistoryDTO.put("score", this.getScoreResumeDTO());
         return scoreHistoryDTO;

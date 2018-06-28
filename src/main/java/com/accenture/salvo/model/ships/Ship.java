@@ -1,6 +1,6 @@
-package com.accenture.salvo.ships;
+package com.accenture.salvo.model.ships;
 
-import com.accenture.salvo.games.GamePlayer;
+import com.accenture.salvo.model.games.GamePlayer;
 
 import javax.persistence.*;
 import java.util.LinkedHashMap;
@@ -21,7 +21,6 @@ public class Ship {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "GamePlayer_id")
     private GamePlayer gamePlayer;
-
 
     public Ship() {}
 

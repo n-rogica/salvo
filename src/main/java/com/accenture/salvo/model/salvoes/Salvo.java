@@ -1,6 +1,6 @@
-package com.accenture.salvo.salvoes;
+package com.accenture.salvo.model.salvoes;
 
-import com.accenture.salvo.games.GamePlayer;
+import com.accenture.salvo.model.games.GamePlayer;
 
 import javax.persistence.*;
 import java.util.LinkedHashMap;
@@ -30,7 +30,6 @@ public class Salvo {
         this.turn = turn;
         this.salvoLocations = locations;
     }
-
 
     public Map<String,Object> getSalvoDTO() {
         Map<String,Object> salvoDTO = new LinkedHashMap<>();

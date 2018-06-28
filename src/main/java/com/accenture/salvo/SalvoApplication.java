@@ -1,13 +1,18 @@
 package com.accenture.salvo;
 
-import com.accenture.salvo.games.*;
-import com.accenture.salvo.players.Player;
-import com.accenture.salvo.players.PlayerRepository;
-import com.accenture.salvo.salvoes.Salvo;
-import com.accenture.salvo.salvoes.SalvoRepository;
-import com.accenture.salvo.ships.Ship;
-import com.accenture.salvo.ships.ShipRepository;
-import com.accenture.salvo.ships.ShipType;
+import com.accenture.salvo.model.games.Game;
+import com.accenture.salvo.model.games.GamePlayer;
+import com.accenture.salvo.model.games.Score;
+import com.accenture.salvo.model.players.Player;
+import com.accenture.salvo.repository.PlayerRepository;
+import com.accenture.salvo.repository.GamePlayerRepository;
+import com.accenture.salvo.repository.GameRepository;
+import com.accenture.salvo.repository.ScoreRepository;
+import com.accenture.salvo.model.salvoes.Salvo;
+import com.accenture.salvo.repository.SalvoRepository;
+import com.accenture.salvo.model.ships.Ship;
+import com.accenture.salvo.repository.ShipRepository;
+import com.accenture.salvo.model.ships.ShipType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -15,14 +20,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
 
 import java.util.*;
 
@@ -425,7 +423,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
 	}
 }
 
-
+/*
 @EnableWebSecurity
 @Configuration
 class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
@@ -451,7 +449,7 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 
 
 
-  }
+  }*/
 
 
 

@@ -1,14 +1,12 @@
-package com.accenture.salvo.games;
+package com.accenture.salvo.model.games;
 
-import com.accenture.salvo.games.Game;
-import com.accenture.salvo.players.Player;
-import com.accenture.salvo.salvoes.Salvo;
-import com.accenture.salvo.ships.Ship;
+import com.accenture.salvo.model.players.Player;
+import com.accenture.salvo.model.salvoes.Salvo;
+import com.accenture.salvo.model.ships.Ship;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Entity
@@ -41,7 +39,6 @@ public class GamePlayer {
         this.game = game;
         this.joinDate = new Date();
     }
-    //
 
     public Player getPlayer(){
         return this.player;
@@ -98,6 +95,4 @@ public class GamePlayer {
     public Object getSalvoesDTO() {
         return this.salvoes.stream().map(salvo -> salvo.getSalvoDTO()).collect(Collectors.toList());
     }
-
-
 }

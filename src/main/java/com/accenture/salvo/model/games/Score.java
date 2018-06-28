@@ -1,7 +1,6 @@
-package com.accenture.salvo.games;
+package com.accenture.salvo.model.games;
 
-import com.accenture.salvo.games.Game;
-import com.accenture.salvo.players.Player;
+import com.accenture.salvo.model.players.Player;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -39,9 +38,6 @@ public class Score {
         this.player = player;
     }
 
-
-
-
     public void setScore(double score) {
         this.score = score;
     }
@@ -66,8 +62,6 @@ public class Score {
         return this.score;
     }
 
-
-
     public Game getGame() {
         return this.game;
     }
@@ -79,7 +73,6 @@ public class Score {
     public Date getFinishDate() {
         return this.finishDate;
     }
-
 
     public Object getScoreDTO() {
         Map<String,Object> scoreDTO = new LinkedHashMap<>();
