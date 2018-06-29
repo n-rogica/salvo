@@ -6,12 +6,11 @@
   <link rel="stylesheet" type="text/css" href="css/game.css">
   <link rel="stylesheet" href="css/bootstrap.min.css">
 </head>
-<body>
-<video autoplay id="myVideo">
-  <source src="https://www.youtube.com/watch?v=PktGR2t-yX4" type="video">
+<body class="game2Body">
 
-</video>
-    <div class="container">
+
+
+<div class="container">
       <div>
           <span id="playerInfo"></span>
       </div>
@@ -19,13 +18,15 @@
         <div class="col">
           <section>
             <h2>Game Board</h2>
-            <table border="1">
+            <table class="gameBoardTable" border="1">
+              <div class="tableElement">
               <thead>
                 <th></th>
                 <th id="bth_0">1</th><th id="bth_1">2</th><th id="bth_2">3</th><th id="bth_3">4</th><th id="bth_4">5</th>
                 <th id="bth_5">6</th><th id="bth_6">7</th><th id="bth_7">8</th><th id="bth_8">9</th><th id="bth_9">10</th>
               </thead>
-              <tbody>
+
+              <tbody class="gameBoardBody">
                 <tr>
                   <td>A</td>
                   <td id="B_A1"></td><td id="B_A2"></td><td  id="B_A3"></td><td id="B_A4"></td><td  id="B_A5"></td>
@@ -83,7 +84,7 @@
         <div class="col">
           <section>
             <h2>Salvo board</h2>
-            <table border="1">
+            <table class="salvoBoardTable" border="1">
               <thead>
                 <th></th>
                 <th id="th_0">1</th><th id="th_1">2</th><th id="th_2">3</th><th id="th_3">4</th><th id="th_4">5</th>
@@ -146,6 +147,8 @@
         </div>
       </div>
     </div>
+</div>
+
 <script src="js/popper.min.js"></script>
 <script src="js/jquery-3.3.1.min.js"></script>
 <script src="js/bootstrap.min.js"></script>

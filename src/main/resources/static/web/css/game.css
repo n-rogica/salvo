@@ -1,48 +1,93 @@
+
+
+table td, table th {
+    height: 25px;
+    width: 40px;
+    border-width: 0.1px;
+}
+
+.game2Body {
+  background-image: url(../images/btwp.jpg);
+  background-repeat: no-repeat;
+
+}
+
+
+.gameBoardTable {
+    width: 400px;
+    height: 275px;
+     background-image: url(../images/images.jpg);
+  /*  background-image: url(../images/giphy.gif.3d74884c68a8c6688421b147fc526b94.gif);*/
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    opacity: 0.9;
+    color: white;
+    text-align: center;
+
+}
+
+.tablaJugadores {
+
+    background-image: url(../images/giphy.gif.3d74884c68a8c6688421b147fc526b94.gif);
+    background-size: auto;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+
+}
+
+
+.salvoBoardTable {
+    width: 400px;
+    height: 275px;
+     background-image: url(../images/images.jpg);
+  /*  background-image: url(../images/giphy.gif.3d74884c68a8c6688421b147fc526b94.gif);*/
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    opacity: 0.9;
+    color: white;
+    text-align: center;
+
+}
+
+.gameBoardBody {
+    background-color: ;
+}
+
 .ship-piece{
-    background-color: darkslateblue;
+     background-image: url(../images/boat.jpg);
+     background-size: 100%;
+     background-repeat: no-repeat;
+     opacity: 0.6;
 }
 
 .ship-piece-hited{
-    background-color: darkmagenta;
-    color: white;
+    background-image: url(../images/comic-boom-explosion-2-13.png);
+    background-size: 100%;
+    background-repeat: no-repeat;
+    color: MediumTurquoise;
+    font-size: 20px;
+    font-weight: 800;
+    opacity: 0.8;
 }
 
 .salvo{
-    background-color: crimson;
-    color: white;
+    background-image: url(../images/salvo.jpg);
+    background-size: 120%;
+    background-repeat: no-repeat;
+    background-position: center;
+    color: red;
+    font-size: 20px;
+    font-weight: 800;
+    opacity: 0.8;
 }
 
-/* Style the video: 100% width and height to cover the entire window */
-#myVideo {
-    position: fixed;
+video {
+
+position: fixed;
     right: 0;
     bottom: 0;
     min-width: 100%;
     min-height: 100%;
-}
-
-/* Add some content at the bottom of the video/page */
-.content {
-    position: fixed;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    color: #f1f1f1;
-    width: 100%;
-    padding: 20px;
-}
-
-/* Style the button used to pause/play the video */
-#myBtn {
-    width: 200px;
-    font-size: 18px;
-    padding: 10px;
-    border: none;
-    background: #000;
-    color: #fff;
-    cursor: pointer;
-}
-
-#myBtn:hover {
-    background: #ddd;
-    color: black;
 }
