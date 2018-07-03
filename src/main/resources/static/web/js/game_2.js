@@ -13,6 +13,7 @@ function loadData() {
   $.get('/api/game_view/' + getParameterByName('gp'))
     .done(function (data) {
       var playerInfo;
+      var verticalOrientation;
       if (data.gamePlayers[0].id == getParameterByName('gp'))
         playerInfo = [data.gamePlayers[0].player, data.gamePlayers[1].player];
       else
@@ -21,12 +22,19 @@ function loadData() {
       $('#playerInfo').text(playerInfo[0].email + '(you) vs ' + playerInfo[1].email);
 
       data.ships.forEach(function (shipPiece) {
+        verticalOrientation = isShipOrientationVertical(shipPiece.locations);
         shipPiece.locations.forEach(function (shipLocation) {
           if(isHit(shipLocation,data.salvoes,playerInfo[0].id)) {
            $('#B_' + shipLocation).addClass('ship-piece-hited');
           }
-          else
-            $('#B_' + shipLocation).addClass('ship-piece');
+          else {
+              if (verticalOrientation) {
+                  $('#B_' + shipLocation).addClass('ship-pieceV');
+              } else {
+                  $('#B_' + shipLocation).addClass('ship-piece');
+              }
+
+          }
         });
 
       });
@@ -46,6 +54,17 @@ function loadData() {
     .fail(function (jqXHR, textStatus) {
       alert('Failed: ' + textStatus);
     });
+}
+
+function isShipOrientationVertical(locations) {
+    var firstPiece = locations[0];
+    var secondPiece = locations[1];
+
+    if (firstPiece.charAt(0) != secondPiece.charAt(0)) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 function isHit(shipLocation,salvoes,playerId) {

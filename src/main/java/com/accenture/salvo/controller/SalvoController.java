@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -32,8 +34,12 @@ public class SalvoController {
     @RequestMapping("/games")
     /*metodo que devuelve un json con el detalle de todos los juegos*/
     public Object getGameIds() {
+        Map<String, Object> gamesDTO = new LinkedHashMap<>();
         List<Game> games = gameRepository.findAll();
-        return games.stream().map(Game::getGameDTO).collect(Collectors.toList());
+
+        gamesDTO.put("player","Guest");
+        gamesDTO.put("games", games.stream().map(Game::getGameDTO).collect(Collectors.toList()));
+        return gamesDTO;
     }
 
     @RequestMapping("/leaderBoard")
