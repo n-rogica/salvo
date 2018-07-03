@@ -8,6 +8,9 @@ import com.accenture.salvo.repository.GameRepository;
 import com.accenture.salvo.model.players.Player;
 import com.accenture.salvo.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,9 +39,16 @@ public class SalvoController {
     public Object getGameIds() {
         Map<String, Object> gamesDTO = new LinkedHashMap<>();
         List<Game> games = gameRepository.findAll();
+        Player player = this.getAuthenticatedPlayer();
 
-        gamesDTO.put("player","Guest");
-        gamesDTO.put("games", games.stream().map(Game::getGameDTO).collect(Collectors.toList()));
+        if (player == null) {
+            gamesDTO.put("player","Guest");
+            gamesDTO.put("games", games.stream().map(Game::getGameDTO).collect(Collectors.toList()));
+        } else {
+            gamesDTO.put("player",player.getPlayerDTO()); //revisar
+            gamesDTO.put("games", games.stream().map(Game::getGameDTO).collect(Collectors.toList()));
+        }
+
         return gamesDTO;
     }
 
@@ -55,5 +65,14 @@ public class SalvoController {
         /*metodo que devuelve el estado de un juego desde el punto de vista del usuario qeu se pasa por parametro*/
         GamePlayer gamePlayer = gamePlayerRepository.findOne(gamePlayerId);
         return gamePlayer.getGameplayerPovDTO();
+    }
+
+    private Player getAuthenticatedPlayer() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            return null;
+        } else {
+            return playerRepository.findByUserName(authentication.getName());
+        }
     }
 }
