@@ -65,9 +65,7 @@ opacity: 0.9;
 
 }
 
-.gameBoardBody {
-    background-color: white;
-}
+
 
 .ship-piece{
      background-image: url(../images/boat.jpg);

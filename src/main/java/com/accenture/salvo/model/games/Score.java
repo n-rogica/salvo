@@ -13,7 +13,7 @@ public class Score {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    private double score;
+    private Double score;
     private Date finishDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -26,9 +26,9 @@ public class Score {
 
     public Score(){}
 
-    public Score(double score, Game game, Player player) {
+    public Score(Double score, Game game, Player player) {
         this.score = score;
-        if (this.score != -1) {
+        if (this.score == null) {
             this.finishDate = game.getCreationDate();
             this.finishDate.toInstant().plusSeconds(1800);
         } else {
@@ -76,7 +76,7 @@ public class Score {
 
     public Object getScoreDTO() {
         Map<String,Object> scoreDTO = new LinkedHashMap<>();
-        scoreDTO.put("id", this.id);
+        scoreDTO.put("playerID", this.player.getId());
         scoreDTO.put("score", this.score);
         scoreDTO.put("finish date", this.finishDate);
         return scoreDTO;

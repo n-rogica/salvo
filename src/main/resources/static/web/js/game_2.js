@@ -19,7 +19,7 @@ function loadData() {
       else
         playerInfo = [data.gamePlayers[1].player, data.gamePlayers[0].player];
 
-      $('#playerInfo').text(playerInfo[0].email + '(you) vs ' + playerInfo[1].email);
+      $('#playerInfo').text(playerInfo[0].name + '(you) vs ' + playerInfo[1].name);
 
       data.ships.forEach(function (shipPiece) {
         verticalOrientation = isShipOrientationVertical(shipPiece.locations);

@@ -304,27 +304,27 @@ public class SalvoApplication extends SpringBootServletInitializer {
 
 		/* =================== GAMES =================== */
 
-		Score scoreGame1Bauer = new Score(1,gameBauerObrian, jbauer);
-		Score scoreGame1Obrian = new Score(0,gameBauerObrian, cobrian);
+		Score scoreGame1Bauer = new Score(1.0,gameBauerObrian, jbauer);
+		Score scoreGame1Obrian = new Score(0.0,gameBauerObrian, cobrian);
 
 		Score scoreGame2Bauer = new Score(0.5,gameBauerObrian2, jbauer);
 		Score scoreGame2Obrian = new Score(0.5,gameBauerObrian2, cobrian);
 
-		Score scoreGame3Obrian = new Score(1,gameObrianAlmeida,cobrian);
-		Score scoreGame3Almeida = new Score(0,gameObrianAlmeida, talmeida);
+		Score scoreGame3Obrian = new Score(1.0,gameObrianAlmeida,cobrian);
+		Score scoreGame3Almeida = new Score(0.0,gameObrianAlmeida, talmeida);
 
 		Score scoreGame4Obrian = new Score(0.5,gameObrianBauer,cobrian);
 		Score scoreGame4Bauer = new Score(0.5,gameObrianBauer, jbauer);
 
-		Score scoreGame5Almeida = new Score(-1,gameAlmeidaBauer,talmeida);
-		Score scoreGame5Bauer = new Score(-1,gameAlmeidaBauer, jbauer);
+		Score scoreGame5Almeida = new Score(null,gameAlmeidaBauer,talmeida);
+		Score scoreGame5Bauer = new Score(null,gameAlmeidaBauer, jbauer);
 
-		Score scoreGame6Kbauer = new Score(-1, gameKBauer, kbauer);
+		Score scoreGame6Kbauer = new Score(null, gameKBauer, kbauer);
 
-		Score scoreGame7Almeida = new Score(-1, gameAlmeida, talmeida);
+		Score scoreGame7Almeida = new Score(null, gameAlmeida, talmeida);
 
-		Score scoreGame8Kbauer = new Score(-1, gameKbaueAlmeida, kbauer);
-		Score scoreGame8Almeida = new Score(-1, gameKbaueAlmeida, talmeida);
+		Score scoreGame8Kbauer = new Score(null, gameKbaueAlmeida, kbauer);
+		Score scoreGame8Almeida = new Score(null, gameKbaueAlmeida, talmeida);
 
 
 
@@ -465,18 +465,12 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 		//REQUESTS
 		http.authorizeRequests().
-				antMatchers("/web/games_3.html").permitAll().
-				antMatchers("/web/js/**").permitAll().
-				antMatchers("/web/css/**").permitAll().
-				antMatchers("/api/games").permitAll().
-				antMatchers("/api/leaderBoard").permitAll().
-				antMatchers("/api/login").permitAll().
-				antMatchers("/api/logout").permitAll().
-				anyRequest().fullyAuthenticated();
+				antMatchers("/web/game_3.html").fullyAuthenticated().
+				anyRequest().permitAll();
 
 		//LOGIN
-		http.formLogin().usernameParameter("username").
-				passwordParameter("password").
+		http.formLogin().usernameParameter("name").
+				passwordParameter("pwd").
 				loginPage("/api/login");
 
 		//LOGOUT

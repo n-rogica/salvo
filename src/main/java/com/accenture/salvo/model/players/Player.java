@@ -59,6 +59,13 @@ public class Player {
     public Map<String, Object> getPlayerDTO() {
         Map<String,Object>  playerDTO = new LinkedHashMap<>();
         playerDTO.put("id", this.id);
+        playerDTO.put("name", this.userName);
+        return playerDTO;
+    }
+
+    public Map<String, Object> getPlayerWithMailDTO() {
+        Map<String,Object>  playerDTO = new LinkedHashMap<>();
+        playerDTO.put("id", this.id);
         playerDTO.put("email", this.userName);
         return playerDTO;
     }
