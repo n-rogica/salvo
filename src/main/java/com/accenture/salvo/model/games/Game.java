@@ -54,7 +54,6 @@ public class Game {
         gameDTO.put("created", this.creationDate);
         gameDTO.put("gamePlayers",gamePlayers.stream().map(gp -> gp.getGamePlayerDTO()).collect(Collectors.toList()));
         gameDTO.put("scores", scores.stream().map(Score::getScoreDTO).collect(Collectors.toList()));
-        gameDTO.put("status", this.getGameState());
         return gameDTO;
      }
 
@@ -72,21 +71,7 @@ public class Game {
         return this.gamePlayers.stream().map(gp -> gp.getGamePlayerDTO()).collect(Collectors.toList());
     }
 
-    //esto lo agrego para la entrega
-    public String getGameState() {
-        if (this.scores.iterator().next().finishedGame()) {
-            return "Finished";
-        } else {
-            if (countGamePlayers() > 1) {
-                return "In progress";
-            } else {
-                return "Awaiting Players";
-            }
-        }
-    }
-
-
-    private long countGamePlayers() {
+    public long countGamePlayers() {
         return this.scores.stream().count();
     }
 }

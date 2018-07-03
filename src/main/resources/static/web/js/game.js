@@ -65,14 +65,14 @@ function refreshGameView(_url) {
 
 
 
-            $('#gameStateBlock').html('<span class="gameStateLabel">TURN: </span><span class="gameStateLabelBig">' + getTurn(gamePlayerData) + '</span><span class="gameStateLabel"> ACTION REQUIRED: </span><span class="gameStateLabelBig">' + gamePlayerData.gameState + '</span>');
+          //  $('#gameStateBlock').html('<span class="gameStateLabel">TURN: </span><span class="gameStateLabelBig">' + getTurn(gamePlayerData) + '</span><span class="gameStateLabel"> ACTION REQUIRED: </span><span class="gameStateLabelBig">' + gamePlayerData.gameState + '</span>');
 
             console.log("waitState: " + waitState);
 
             if (waitState === false) {
                 showSelf(gamePlayerData);
-                makeGameRecordTable(gamePlayerData.hits.opponent, "gameRecordOppTable");
-                makeGameRecordTable(gamePlayerData.hits.self, "gameRecordSelfTable");
+           //     makeGameRecordTable(gamePlayerData.hits.opponent, "gameRecordOppTable");
+           //     makeGameRecordTable(gamePlayerData.hits.self, "gameRecordSelfTable");
             }
 
             if (gamePlayerData.gameState === "PLACESHIPS"){
@@ -233,12 +233,12 @@ function showSelf (gamePlayerData) {
         });
     });
 
-    gamePlayerData.hits.opponent.forEach(function(playTurn) {
+    /*gamePlayerData.hits.opponent.forEach(function(playTurn) {
         playTurn.hitLocations.forEach(function (hitCell) {
             cellID = "#" + hitCell;
             $(cellID).addClass("hitCell");
         });
-    });
+    }); */
 }
 
 function createTable(player) {

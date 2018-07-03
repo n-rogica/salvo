@@ -49,7 +49,45 @@ public class SalvoController {
             gamesDTO.put("games", games.stream().map(Game::getGameDTO).collect(Collectors.toList()));
         }
 
-        return gamesDTO;
+        return gamesDTO;    }
+
+    /*metodo que verifica si el usuario esta autenticado y crea un nuevo juego*/
+    @RequestMapping(path= "/games", method = RequestMethod.POST)
+    public Object createGame() {
+        Player authenticatedPlayer = this.getAuthenticatedPlayer();
+        if (authenticatedPlayer == null) {
+            return new ResponseEntity<>(this.getResponseMapDTO("error", "No esta autenticado"), HttpStatus.UNAUTHORIZED);
+        } else {
+            Game game = new Game();
+            GamePlayer gamePlayer = new GamePlayer(authenticatedPlayer,game);
+            gameRepository.save(game);
+            gamePlayerRepository.save(gamePlayer);
+            return new ResponseEntity<>(this.getResponseMapDTO("gpid", gamePlayer.getId()), HttpStatus.CREATED);
+        }
+    }
+
+    /*Metodo que permite unirse a la partida ingresada por parametro*/
+    @RequestMapping(path="/game/{nn}/players", method = RequestMethod.POST)
+    public Object joinGame(@PathVariable("nn") Long gameId) {
+        Player player = getAuthenticatedPlayer();
+
+        if (player == null) {
+            return new ResponseEntity<>(this.getResponseMapDTO("error", "No esta autenticado"), HttpStatus.UNAUTHORIZED);
+        }
+
+        Game game = gameRepository.findOne(gameId);
+
+        if (game == null) {
+            return new ResponseEntity<>(this.getResponseMapDTO("error", "Id de juego invalido"), HttpStatus.FORBIDDEN);
+        }
+
+        if (game.countGamePlayers() == 2) {
+            return new ResponseEntity<>(this.getResponseMapDTO("error", "Juego completo"), HttpStatus.FORBIDDEN);
+        }
+
+        GamePlayer gamePlayer = new GamePlayer(player,game);
+        gamePlayerRepository.save(gamePlayer);
+        return new ResponseEntity<>(this.getResponseMapDTO("gpid", gamePlayer.getId()), HttpStatus.CREATED);
     }
 
     @RequestMapping("/leaderBoard")
@@ -59,12 +97,21 @@ public class SalvoController {
         return leaderBoard;
     }
 
-
+    /*metodo que devuelve el estado de un juego desde el punto de vista del usuario qeu se pasa por parametro
+     * este metodo requiere que el usuario este autenticado y verifica que el id pasado por parametro corresponda
+     * con el usuario que esta autenticado, en caso contrario informa al usuario que no puede acceder a esta
+     * informacion*/
     @RequestMapping("/game_view/{nn}")
     public Object getGameById(@PathVariable("nn") Long gamePlayerId) {
-        /*metodo que devuelve el estado de un juego desde el punto de vista del usuario qeu se pasa por parametro*/
+        long authenticatedPlayerId = this.getAuthenticatedPlayer().getId();
         GamePlayer gamePlayer = gamePlayerRepository.findOne(gamePlayerId);
-        return gamePlayer.getGameplayerPovDTO();
+
+        //verifico que sea una partida en la cual se encuentra el usuario autenticado en la aplicacion
+        if (gamePlayer.getPlayer().getId() ==  authenticatedPlayerId) {
+            return gamePlayer.getGameplayerPovDTO();
+        } else {
+            return new ResponseEntity<>(this.getResponseMapDTO("error", "no autorizado"), HttpStatus.UNAUTHORIZED);
+        }
     }
 
     //Metodo para crear un jugador, recibe por parametro el nombre de usuario y el password
@@ -74,22 +121,22 @@ public class SalvoController {
                                                @RequestParam("password") String password) {
         //Nombre de usuario vacio
         if (username.isEmpty() ) {
-            return new ResponseEntity<>(this.getResponseMapDTO("Nombre de usuario no ingresado"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(this.getResponseMapDTO("error","Nombre de usuario no ingresado"), HttpStatus.FORBIDDEN);
         }
 
         Player player = playerRepository.findByUserName(username);
         //Nombre de usuario existente
         if (player != null) {
-            return new ResponseEntity<>(this.getResponseMapDTO("Ya existe un usuario con ese nombre"), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(this.getResponseMapDTO("error","Ya existe un usuario con ese nombre"), HttpStatus.CONFLICT);
         }
 
         playerRepository.save(new Player(username,password));
-        return new ResponseEntity<>(this.getResponseMapDTO("Usuario creado"), HttpStatus.CREATED);
+        return new ResponseEntity<>(this.getResponseMapDTO("resultado: ","Usuario creado"), HttpStatus.CREATED);
     }
 
-    private Map<String,Object> getResponseMapDTO(String mensaje) {
+    private Map<String,Object> getResponseMapDTO(String clave, Object valor) {
         Map<String,Object> responseMapDTO = new LinkedHashMap<>();
-        responseMapDTO.put("error", mensaje);
+        responseMapDTO.put(clave, valor);
         return responseMapDTO;
     }
 
