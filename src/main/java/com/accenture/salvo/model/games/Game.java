@@ -73,4 +73,13 @@ public class Game {
     public long countGamePlayers() {
         return this.scores.stream().count();
     }
+/*
+    public Map<String,Object> processSalvoes() {
+        long currentTurn = 1;
+        Map<String,Object> processedSalvoesDTO = new LinkedHashMap<>();
+
+
+
+
+    }*/
 }

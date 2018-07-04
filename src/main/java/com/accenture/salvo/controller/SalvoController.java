@@ -5,6 +5,7 @@ import com.accenture.salvo.model.games.Game;
 import com.accenture.salvo.model.games.GamePlayer;
 import com.accenture.salvo.model.salvoes.Salvo;
 import com.accenture.salvo.model.ships.Ship;
+import com.accenture.salvo.model.ships.ShipType;
 import com.accenture.salvo.repository.*;
 import com.accenture.salvo.model.players.Player;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,6 +105,8 @@ public class SalvoController {
         playerShips.put("ships", gamePlayer.getGamePlayerShipsDTO());
         return playerShips;
     }
+
+    /*========================================SET SHIPS==================*/
 
     /*Metodo que recibe una lista de ships en el request y si se cumplen las condiciones los asocia con el gameplayer
     indicado por parametro

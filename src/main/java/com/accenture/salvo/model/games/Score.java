@@ -59,6 +59,9 @@ public class Score {
     }
 
     public double getScore() {
+        if (score == null) {
+            return 0;
+        }
         return this.score;
     }
 
