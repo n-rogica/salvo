@@ -58,10 +58,17 @@ public class SalvoController {
         if (authenticatedPlayer == null) {
             return new ResponseEntity<>(this.getResponseMapDTO("error", "No esta autenticado"), HttpStatus.UNAUTHORIZED);
         } else {
+            //codigo original
             Game game = new Game();
             GamePlayer gamePlayer = new GamePlayer(authenticatedPlayer,game);
             gameRepository.save(game);
             gamePlayerRepository.save(gamePlayer);
+
+
+            //REFACTOR
+//            GamePlayer gamePlayer = new GamePlayer(authenticatedPlayer, new Game());
+//            gamePlayerRepository.save(gamePlayer);
+
             return new ResponseEntity<>(this.getResponseMapDTO("gpid", gamePlayer.getId()), HttpStatus.CREATED);
         }
     }
