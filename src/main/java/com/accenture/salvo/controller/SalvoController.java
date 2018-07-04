@@ -3,10 +3,10 @@ package com.accenture.salvo.controller;
 
 import com.accenture.salvo.model.games.Game;
 import com.accenture.salvo.model.games.GamePlayer;
-import com.accenture.salvo.repository.GamePlayerRepository;
-import com.accenture.salvo.repository.GameRepository;
+import com.accenture.salvo.model.salvoes.Salvo;
+import com.accenture.salvo.model.ships.Ship;
+import com.accenture.salvo.repository.*;
 import com.accenture.salvo.model.players.Player;
-import com.accenture.salvo.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +34,15 @@ public class SalvoController {
     @Autowired
     PlayerRepository playerRepository;
 
+    @Autowired
+    ShipRepository shipRepository;
+
+    @Autowired
+    SalvoRepository salvoRepository;
+
+
+    /*=========================GET GAME ID=========================*/
+
     @RequestMapping(path= "/games", method = RequestMethod.GET)
     /*metodo que devuelve un json con el detalle de todos los juegos*/
     public Object getGameIds() {
@@ -49,29 +58,147 @@ public class SalvoController {
             gamesDTO.put("games", games.stream().map(Game::getGameDTO).collect(Collectors.toList()));
         }
 
-        return gamesDTO;    }
+        return gamesDTO;
+    }
+
+    /*=========================CREATE GAME===================================*/
 
     /*metodo que verifica si el usuario esta autenticado y crea un nuevo juego*/
     @RequestMapping(path= "/games", method = RequestMethod.POST)
     public Object createGame() {
         Player authenticatedPlayer = this.getAuthenticatedPlayer();
         if (authenticatedPlayer == null) {
-            return new ResponseEntity<>(this.getResponseMapDTO("error", "No esta autenticado"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(this.getResponseMapDTO("error", "No estas logueado capo"), HttpStatus.UNAUTHORIZED);
         } else {
             //codigo original
-            Game game = new Game();
+            /*Game game = new Game();
             GamePlayer gamePlayer = new GamePlayer(authenticatedPlayer,game);
             gameRepository.save(game);
-            gamePlayerRepository.save(gamePlayer);
-
+            gamePlayerRepository.save(gamePlayer);*/
 
             //REFACTOR
-//            GamePlayer gamePlayer = new GamePlayer(authenticatedPlayer, new Game());
-//            gamePlayerRepository.save(gamePlayer);
-
-            return new ResponseEntity<>(this.getResponseMapDTO("gpid", gamePlayer.getId()), HttpStatus.CREATED);
+            GamePlayer gamePlayer = new GamePlayer(authenticatedPlayer, gameRepository.save(new Game()));
+            gamePlayerRepository.save(gamePlayer);
+            return this.createResponseEntity("gpid", gamePlayer.getId(), HttpStatus.CREATED);
         }
     }
+
+    /*=========================GET SHIPS=========================*/
+
+    /*Metodo que devuelve los ships del jugador pasado por parametro en la url*/
+    @RequestMapping(path="/games/players/{gamePlayerId}/ships", method = RequestMethod.GET)
+    public Object getShips(@PathVariable("gamePlayerId") long gpId) {
+        Map<String,Object> playerShips = new LinkedHashMap<>();
+        GamePlayer gamePlayer = gamePlayerRepository.findOne(gpId);
+
+        Player player = getAuthenticatedPlayer();
+
+        if (player == null || (player.getId() != gamePlayer.getPlayer().getId())) {
+            return this.createResponseEntity("error", "no quieras hacer trampa capo", HttpStatus.FORBIDDEN);
+        }
+
+        if (gamePlayer == null) {
+            return this.createResponseEntity("error", "Id de gameplayer incorrecto", HttpStatus.UNAUTHORIZED);
+        }
+        playerShips.put("gpid", gamePlayer.getId());
+        playerShips.put("ships", gamePlayer.getGamePlayerShipsDTO());
+        return playerShips;
+    }
+
+    /*Metodo que recibe una lista de ships en el request y si se cumplen las condiciones los asocia con el gameplayer
+    indicado por parametro
+     */
+    @RequestMapping(path="/games/players/{gamePlayerId}/ships", method = RequestMethod.POST)
+    public Object setShipsLocations(@PathVariable("gamePlayerId") long gpId, @RequestBody List<Ship> ships) {
+    Player authenticatedPlayer = getAuthenticatedPlayer();
+
+    if (authenticatedPlayer == null) {
+        return this.createResponseEntity("error", "No estas logueado capo", HttpStatus.UNAUTHORIZED);
+    }
+
+    GamePlayer gamePlayer = gamePlayerRepository.findOne(gpId);
+
+    if (gamePlayer == null) {
+        return this.createResponseEntity("error", "Id de gameplayer incorrecto", HttpStatus.UNAUTHORIZED);
+    }
+
+    if (authenticatedPlayer.getId() != gamePlayer.getPlayer().getId()) {
+        return new ResponseEntity<>(this.getResponseMapDTO("error", "Id de jugador no coincide con el juego"), HttpStatus.UNAUTHORIZED);
+    }
+
+    //Verifique que el usuario esta logueado, el gameplayer id existe y es el correspondiente al usuario logueado
+
+    if (gamePlayer.hasNoShips()) {
+        ships.stream().forEach(ship -> {
+            Ship newShip = new Ship(ship.getShipType(), gamePlayer, ship.getLocations());
+            shipRepository.save(newShip);
+            gamePlayer.addShip(newShip);
+        });
+        return new ResponseEntity<>(this.getResponseMapDTO("Mensaje", "Barcos Agregados"), HttpStatus.CREATED);
+    } else {
+        return new ResponseEntity<>(this.getResponseMapDTO("error", "Ya se colocaron los barcos"), HttpStatus.FORBIDDEN );
+        }
+    }
+
+
+    /*==============================GET SALVOES=======================*/
+
+    /*Metodo que devuelve los salvos del jugador pasado por parametro en la url*/
+    @RequestMapping(path="/games/players/{gamePlayerId}/salvoes", method = RequestMethod.GET)
+    public Object getSalvoes(@PathVariable("gamePlayerId") long gpId) {
+        Map<String,Object> playerSalvoes = new LinkedHashMap<>();
+        GamePlayer gamePlayer = gamePlayerRepository.findOne(gpId);
+
+        Player player = getAuthenticatedPlayer();
+
+        if (player == null || (player.getId() != gamePlayer.getPlayer().getId())) {
+            return this.createResponseEntity("error", "no quieras hacer trampa capo", HttpStatus.FORBIDDEN);
+        }
+
+        if (gamePlayer == null) {
+            return new ResponseEntity<>(this.getResponseMapDTO("error", "Id de gameplayer incorrecto"), HttpStatus.UNAUTHORIZED);
+        }
+
+        playerSalvoes.put("gpid", gamePlayer.getId());
+        playerSalvoes.put("ships", gamePlayer.getSalvoesDTO());
+        return playerSalvoes;
+    }
+
+
+    /*=================================SET SALVOES==================================================*/
+    /* Metodo que recibe por parametro una lista de salvos y si se cumplen las condiciones los asocia
+    con el player indicado
+     */
+    @RequestMapping(path="/games/players/{gamePlayerId}/salvoes", method = RequestMethod.POST)
+    public Object setSalvoes(@PathVariable("gamePlayerId") long gpId, @RequestBody List<Salvo> salvoes) {
+        Player authenticatedPlayer = getAuthenticatedPlayer();
+        //TODO FALTA REVISAR LA CONDICION DEL TURNO
+
+        if (authenticatedPlayer == null) {
+            return this.createResponseEntity("error", "No esta autenticado", HttpStatus.UNAUTHORIZED);
+        }
+
+        GamePlayer gamePlayer = gamePlayerRepository.findOne(gpId);
+
+        if (gamePlayer == null) {
+            return this.createResponseEntity("error", "id de gameplayer incorrecto", HttpStatus.UNAUTHORIZED);
+        }
+
+        if (authenticatedPlayer.getId() != gamePlayer.getPlayer().getId()) {
+            return this.createResponseEntity("error", "id de jugador no coincide con el juego", HttpStatus.UNAUTHORIZED);
+        }
+
+        //Verifique que el usuario esta logueado, el gameplayer id existe y es el correspondiente al usuario logueado
+
+        if (gamePlayer.hasNoSalvoes()) {
+            return this.createResponseEntity("mensaje", "estas poniendo los salvos", HttpStatus.I_AM_A_TEAPOT);
+        } else {
+            return new ResponseEntity<>(this.getResponseMapDTO("error", "Ya se colocaron los barcos"), HttpStatus.FORBIDDEN );
+        }
+    }
+
+
+    /*=====================================JOIN GAME===========================================*/
 
     /*Metodo que permite unirse a la partida ingresada por parametro*/
     @RequestMapping(path="/game/{nn}/players", method = RequestMethod.POST)
@@ -97,12 +224,16 @@ public class SalvoController {
         return new ResponseEntity<>(this.getResponseMapDTO("gpid", gamePlayer.getId()), HttpStatus.CREATED);
     }
 
+    /*===============================================GET LEADERBOARD==================================================*/
+
     @RequestMapping("/leaderBoard")
     public List<Object> getLeaderBoard() {
         List<Player> players = playerRepository.findAll();
         List<Object> leaderBoard = players.stream().map(player -> player.getScoreHistoryDTO()).collect(Collectors.toList());
         return leaderBoard;
     }
+
+    /*===============================================GET GAME BY ID===================================================*/
 
     /*metodo que devuelve el estado de un juego desde el punto de vista del usuario qeu se pasa por parametro
      * este metodo requiere que el usuario este autenticado y verifica que el id pasado por parametro corresponda
@@ -120,6 +251,9 @@ public class SalvoController {
             return new ResponseEntity<>(this.getResponseMapDTO("error", "no autorizado"), HttpStatus.UNAUTHORIZED);
         }
     }
+
+
+    /*=================================== CREATE PLAYER ==============================================================*/
 
     //Metodo para crear un jugador, recibe por parametro el nombre de usuario y el password
     //Si el usuario ya existe, o el nombre esta vacio devuelve un codigo de error
@@ -141,6 +275,9 @@ public class SalvoController {
         return new ResponseEntity<>(this.getResponseMapDTO("resultado: ","Usuario creado"), HttpStatus.CREATED);
     }
 
+
+    /*==========================================================METODO PRIVADO========================================S*/
+
     private Map<String,Object> getResponseMapDTO(String clave, Object valor) {
         Map<String,Object> responseMapDTO = new LinkedHashMap<>();
         responseMapDTO.put(clave, valor);
@@ -155,4 +292,11 @@ public class SalvoController {
             return playerRepository.findByUserName(authentication.getName());
         }
     }
+
+    private ResponseEntity<Object> createResponseEntity(String tipoDeRespuesta, Object valor, HttpStatus httpStatus ) {
+        Map<String,Object> responseMap = new LinkedHashMap<>();
+        responseMap.put(tipoDeRespuesta, valor);
+        return new ResponseEntity<>(responseMap, httpStatus);
+    }
+
 }

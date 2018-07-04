@@ -40,6 +40,10 @@ public class GamePlayer {
         this.joinDate = new Date();
     }
 
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
     public Player getPlayer(){
         return this.player;
     }
@@ -66,6 +70,14 @@ public class GamePlayer {
 
     public Set<Salvo> getSalvoes() {
         return this.salvoes;
+    }
+
+    public boolean hasNoShips() {
+        return this.ships.isEmpty();
+    }
+
+    public boolean hasNoSalvoes() {
+        return this.salvoes.isEmpty();
     }
 
     @JsonIgnore

@@ -29,7 +29,6 @@ public class Game {
         this.creationDate = date;
     }
 
-
     public Date getCreationDate(){
         return this.creationDate;
     }
