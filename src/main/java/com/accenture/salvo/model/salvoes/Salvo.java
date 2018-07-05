@@ -31,6 +31,24 @@ public class Salvo {
         this.salvoLocations = locations;
     }
 
+    public int getTurn() {
+        return this.turn;
+    }
+
+    public void setTurn(int turn) {
+        this.turn = turn;
+    }
+
+    public void setSalvoLocations(List<String> salvoLocations) {
+        this.salvoLocations = salvoLocations;
+    }
+
+    public List<String> getSalvoLocations() {
+        return this.salvoLocations;
+    }
+
+
+
     public Map<String,Object> getSalvoDTO() {
         Map<String,Object> salvoDTO = new LinkedHashMap<>();
         salvoDTO.put("turn", this.turn);

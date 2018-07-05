@@ -120,4 +120,8 @@ public class GamePlayer {
     public Object getSalvoesDTO() {
         return this.salvoes.stream().map(salvo -> salvo.getSalvoDTO()).collect(Collectors.toList());
     }
+
+    public void addSalvo(Salvo salvo) {
+        this.salvoes.add(salvo);
+    }
 }

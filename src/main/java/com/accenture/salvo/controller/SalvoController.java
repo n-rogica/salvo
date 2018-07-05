@@ -163,7 +163,7 @@ public class SalvoController {
         }
 
         playerSalvoes.put("gpid", gamePlayer.getId());
-        playerSalvoes.put("ships", gamePlayer.getSalvoesDTO());
+        playerSalvoes.put("salvoes", gamePlayer.getSalvoesDTO());
         return playerSalvoes;
     }
 
@@ -173,9 +173,8 @@ public class SalvoController {
     con el player indicado
      */
     @RequestMapping(path="/games/players/{gamePlayerId}/salvoes", method = RequestMethod.POST)
-    public Object setSalvoes(@PathVariable("gamePlayerId") long gpId, @RequestBody List<Salvo> salvoes) {
+    public Object setSalvoes(@PathVariable("gamePlayerId") long gpId, @RequestBody Salvo salvo) {
         Player authenticatedPlayer = getAuthenticatedPlayer();
-        //TODO FALTA REVISAR LA CONDICION DEL TURNO
 
         if (authenticatedPlayer == null) {
             return this.createResponseEntity("error", "No esta autenticado", HttpStatus.UNAUTHORIZED);
@@ -188,16 +187,31 @@ public class SalvoController {
         }
 
         if (authenticatedPlayer.getId() != gamePlayer.getPlayer().getId()) {
-            return this.createResponseEntity("error", "id de jugador no coincide con el juego", HttpStatus.UNAUTHORIZED);
+            return this.createResponseEntity("error", "id de jugador no coincide con el juego", HttpStatus.FORBIDDEN);
         }
 
         //Verifique que el usuario esta logueado, el gameplayer id existe y es el correspondiente al usuario logueado
 
-        if (gamePlayer.hasNoSalvoes()) {
-            return this.createResponseEntity("mensaje", "estas poniendo los salvos", HttpStatus.I_AM_A_TEAPOT);
+
+        //Verifico que el turno que le toca al usuario se corresponda con el turno del salvo
+        //TODO modificar cuando se implemente un tracking del turno global desde el game
+        if (this.canPlaceSalvoes(gamePlayer, salvo)) {
+            Salvo newSalvo = new Salvo(gamePlayer,salvo.getTurn(), salvo.getSalvoLocations());
+            salvoRepository.save(newSalvo);
+            gamePlayer.addSalvo(newSalvo);
+            return this.createResponseEntity("Mensaje", "Salvos agregados", HttpStatus.CREATED);
         } else {
-            return new ResponseEntity<>(this.getResponseMapDTO("error", "Ya se colocaron los barcos"), HttpStatus.FORBIDDEN );
+            return this.createResponseEntity("error", "Ya se ingresaron los salvos del turno correspondiente", HttpStatus.FORBIDDEN);
         }
+
+
+    }
+
+    private boolean canPlaceSalvoes(GamePlayer gamePlayer, Salvo salvo) {
+        if (gamePlayer.getSalvoes().isEmpty()) {
+            return true;
+        }
+        return gamePlayer.getSalvoes().size() < salvo.getTurn();
     }
 
 
