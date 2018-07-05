@@ -61,4 +61,16 @@ public class Ship {
     public List<String> getLocations() {
         return this.locations;
     }
+
+    public boolean shipPieceHitted(String location) {
+        return this.locations.stream().anyMatch(shipLocation -> shipLocation == location);
+    }
+
+    public String getShipTypeAsString() {
+        if (this.shipType == ShipType.PATROL_BOAT) {
+            return "patrolboat";
+        } else {
+            return this.shipType.name().toLowerCase();
+        }
+    }
 }

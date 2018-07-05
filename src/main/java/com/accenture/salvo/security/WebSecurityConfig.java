@@ -36,6 +36,9 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				passwordParameter("pwd").
 				loginPage("/api/login");
 
+		//PARA VER H2
+		http.headers().frameOptions().disable();
+
 		//LOGOUT
 		http.logout().logoutUrl("/api/logout");
 

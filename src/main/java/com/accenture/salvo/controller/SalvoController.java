@@ -94,19 +94,20 @@ public class SalvoController {
 
         Player player = getAuthenticatedPlayer();
 
-        if (player == null || (player.getId() != gamePlayer.getPlayer().getId())) {
-            return this.createResponseEntity("error", "no quieras hacer trampa capo", HttpStatus.FORBIDDEN);
+        if (gamePlayer == null) {
+            return this.createResponseEntity("error", "no se pudo obtener la informacion", HttpStatus.NOT_FOUND);
         }
 
-        if (gamePlayer == null) {
-            return this.createResponseEntity("error", "Id de gameplayer incorrecto", HttpStatus.UNAUTHORIZED);
+        if (player == null || (player.getId() != gamePlayer.getPlayer().getId())) {
+            return this.createResponseEntity("error", "no quieras hacer trampa capo", HttpStatus.UNAUTHORIZED);
         }
+
         playerShips.put("gpid", gamePlayer.getId());
         playerShips.put("ships", gamePlayer.getGamePlayerShipsDTO());
         return playerShips;
     }
 
-    /*========================================SET SHIPS==================*/
+    /*========================================SET SHIPS===============================================================*/
 
     /*Metodo que recibe una lista de ships en el request y si se cumplen las condiciones los asocia con el gameplayer
     indicado por parametro
@@ -116,30 +117,29 @@ public class SalvoController {
     Player authenticatedPlayer = getAuthenticatedPlayer();
 
     if (authenticatedPlayer == null) {
-        return this.createResponseEntity("error", "No estas logueado capo", HttpStatus.UNAUTHORIZED);
+        return this.createResponseEntity("error", "no estas logueado capo", HttpStatus.UNAUTHORIZED);
     }
 
     GamePlayer gamePlayer = gamePlayerRepository.findOne(gpId);
-
     if (gamePlayer == null) {
-        return this.createResponseEntity("error", "Id de gameplayer incorrecto", HttpStatus.UNAUTHORIZED);
+        return this.createResponseEntity("error", "no se pudo acceder al juego", HttpStatus.NOT_FOUND);
     }
 
     if (authenticatedPlayer.getId() != gamePlayer.getPlayer().getId()) {
-        return new ResponseEntity<>(this.getResponseMapDTO("error", "Id de jugador no coincide con el juego"), HttpStatus.UNAUTHORIZED);
+        return this.createResponseEntity("error", "no se pueden agregar barcos", HttpStatus.UNAUTHORIZED);
     }
 
     //Verifique que el usuario esta logueado, el gameplayer id existe y es el correspondiente al usuario logueado
 
-    if (gamePlayer.hasNoShips()) {
+    if (gamePlayer.hasNoShips()) { //TODO revisar esto cuando se implemente la logica del
         ships.stream().forEach(ship -> {
             Ship newShip = new Ship(ship.getShipType(), gamePlayer, ship.getLocations());
             shipRepository.save(newShip);
             gamePlayer.addShip(newShip);
         });
-        return new ResponseEntity<>(this.getResponseMapDTO("Mensaje", "Barcos Agregados"), HttpStatus.CREATED);
+        return this.createResponseEntity("mensaje", "Barcos agregados", HttpStatus.CREATED);
     } else {
-        return new ResponseEntity<>(this.getResponseMapDTO("error", "Ya se colocaron los barcos"), HttpStatus.FORBIDDEN );
+        return this.createResponseEntity("error", "Ya se colocaron los barcos", HttpStatus.FORBIDDEN);
         }
     }
 
@@ -159,7 +159,7 @@ public class SalvoController {
         }
 
         if (gamePlayer == null) {
-            return new ResponseEntity<>(this.getResponseMapDTO("error", "Id de gameplayer incorrecto"), HttpStatus.UNAUTHORIZED);
+            return this.createResponseEntity("error", "Id de gameplayer incorrecto", HttpStatus.UNAUTHORIZED);
         }
 
         playerSalvoes.put("gpid", gamePlayer.getId());
