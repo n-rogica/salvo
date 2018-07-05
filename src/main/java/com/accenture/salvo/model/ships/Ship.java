@@ -34,8 +34,8 @@ public class Ship {
         this.gamePlayer = gamePlayer;
     }
 
-    public void setShipType(ShipType shipType) {
-        this.shipType = shipType;
+    public void setShipType(String shipType) {
+        this.shipType = ShipType.valueOf(shipType.toUpperCase());
     }
 
     public void setLocations(List<String> locations) {
