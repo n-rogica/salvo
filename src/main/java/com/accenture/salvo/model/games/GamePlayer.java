@@ -96,22 +96,10 @@ public class GamePlayer {
         gamePlayerDTO.put("gamePlayers", this.game.getGamePlayersDTO());
         gamePlayerDTO.put("ships", this.getGamePlayerShipsDTO());
         gamePlayerDTO.put("salvoes", this.game.getGameSalvoesDTO());
-      // gamePlayerDTO.put("hits", this.getHitsDTO());
-
+        gamePlayerDTO.put("hits", this.game.getHitsDTO(this.id));
         return gamePlayerDTO;
 
     }
-
-    //TODO terminar esto
-    /*
-    private Object getHitsDTO() {
-        Map<String,Object> hitsDTO = new LinkedHashMap<>();
-        Map<String,Object> processedSalvoesDTO = this.getGame().processSalvoes();
-
-        hitsDTO.put("self",);
-        hitsDTO.put("opponent","asdasd");
-
-    }*/
 
     public List<Object> getGamePlayerShipsDTO() {
         return this.ships.stream().map(ship -> ship.getShipDTO()).collect(Collectors.toList());

@@ -73,6 +73,10 @@ public class Game {
     public long countGamePlayers() {
         return this.scores.stream().count();
     }
+
+    public Object getHitsDTO(long idOfRequestPlayer) {
+
+    }
 /*
     public Map<String,Object> processSalvoes() {
         long currentTurn = 1;
