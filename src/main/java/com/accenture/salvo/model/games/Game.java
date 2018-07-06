@@ -16,7 +16,6 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     private final Date creationDate;
-    private GameState gameState;
 
     @OneToMany(mappedBy = "game", fetch = FetchType.EAGER)
     private Set<GamePlayer> gamePlayers = new HashSet<>();
@@ -26,25 +25,16 @@ public class Game {
 
     public Game(){
         this.creationDate = new Date();
-        this.gameState = GameState.PLACESHIPS;
     }
 
     public Game(Date date){
         this.creationDate = date;
-        this.gameState = GameState.PLACESHIPS;
     }
 
     public Date getCreationDate(){
         return this.creationDate;
     }
 
-    public GameState getGameState() {
-        return this.gameState;
-    }
-
-    public void setGameState(GameState gameState) {
-        this.gameState = gameState;
-    }
 
     @JsonIgnore
     public List<Player> getPlayers(){
@@ -169,5 +159,19 @@ public class Game {
                 shipsStatusMap.merge(ship.getShipTypeAsString(), 1, Integer::sum);
             }
         });
+    }
+
+    public boolean bothPlayersHaveShips() {
+        if (this.gamePlayers.size() != 2) {
+            return false;
+        } else {
+            Iterator<GamePlayer> gpIt = this.gamePlayers.iterator();
+            GamePlayer gp1 = gpIt.next();
+            GamePlayer gp2 = gpIt.next();
+            if (gp1.getShips().isEmpty() || gp2.getShips().isEmpty()) {
+                return false;
+            }
+            return true;
+        }
     }
 }

@@ -15,8 +15,8 @@ public class Ship {
     private ShipType shipType;
 
     @ElementCollection
-    @Column(name="locations")
-    private List<String> locations;
+    @Column(name="shipLocations")
+    private List<String> shipLocations;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "GamePlayer_id")
@@ -24,10 +24,10 @@ public class Ship {
 
     public Ship() {}
 
-    public Ship(ShipType shipType, GamePlayer gamePlayer, List<String> locations) {
+    public Ship(ShipType shipType, GamePlayer gamePlayer, List<String> shipLocations) {
         this.shipType = shipType;
         this.gamePlayer = gamePlayer;
-        this.locations = locations;
+        this.shipLocations = shipLocations;
     }
 
     public void setGamePlayer(GamePlayer gamePlayer) {
@@ -38,8 +38,8 @@ public class Ship {
         this.shipType = ShipType.valueOf(shipType.toUpperCase());
     }
 
-    public void setLocations(List<String> locations) {
-        this.locations = locations;
+    public void setShipLocations(List<String> shipLocations) {
+        this.shipLocations = shipLocations;
     }
 
     public GamePlayer getGamePlayer() {
@@ -50,7 +50,7 @@ public class Ship {
     public Map<String, Object> getShipDTO() {
         Map<String,Object>  shipDTO = new LinkedHashMap<>();
         shipDTO.put("type", this.shipType);
-        shipDTO.put("locations", this.locations);
+        shipDTO.put("locations", this.shipLocations);
         return shipDTO;
     }
 
@@ -58,12 +58,12 @@ public class Ship {
         return this.shipType;
     }
 
-    public List<String> getLocations() {
-        return this.locations;
+    public List<String> getShipLocations() {
+        return this.shipLocations;
     }
 
     public boolean shipPieceHitted(String location) {
-        return this.locations.stream().anyMatch(shipLocation -> shipLocation == location);
+        return this.shipLocations.stream().anyMatch(shipLocation -> shipLocation == location);
     }
 
     public String getShipTypeAsString() {

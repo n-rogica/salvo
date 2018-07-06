@@ -6,7 +6,6 @@ import com.accenture.salvo.model.games.GamePlayer;
 import com.accenture.salvo.model.games.GameState;
 import com.accenture.salvo.model.salvoes.Salvo;
 import com.accenture.salvo.model.ships.Ship;
-import com.accenture.salvo.model.ships.ShipType;
 import com.accenture.salvo.repository.*;
 import com.accenture.salvo.model.players.Player;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,6 +97,7 @@ public class SalvoController {
 
         playerShips.put("gpid", gamePlayer.getId());
         playerShips.put("ships", gamePlayer.getGamePlayerShipsDTO());
+        gamePlayer.updateGameState();
         return playerShips;
     }
 
@@ -125,13 +125,14 @@ public class SalvoController {
 
     //Verifique que el usuario esta logueado, el gameplayer id existe y es el correspondiente al usuario logueado
 
-    if (gamePlayer.hasNoShips()) { //TODO revisar esto cuando se implemente la logica del
+    if (gamePlayer.hasNoShips()) {
         ships.stream().forEach(ship -> {
-            Ship newShip = new Ship(ship.getShipType(), gamePlayer, ship.getLocations());
+            Ship newShip = new Ship(ship.getShipType(), gamePlayer, ship.getShipLocations());
             shipRepository.save(newShip);
             gamePlayer.addShip(newShip);
         });
-        gamePlayer.getGame().setGameState(GameState.WAITINGFOROPP);
+        gamePlayer.updateGameState();
+        gamePlayerRepository.save(gamePlayer);
         return this.createResponseEntity("mensaje", "Barcos agregados", HttpStatus.CREATED);
     } else {
         return this.createResponseEntity("error", "Ya se colocaron los barcos", HttpStatus.FORBIDDEN);
@@ -159,6 +160,7 @@ public class SalvoController {
 
         playerSalvoes.put("gpid", gamePlayer.getId());
         playerSalvoes.put("salvoes", gamePlayer.getSalvoesDTO());
+        gamePlayer.updateGameState();
         return playerSalvoes;
     }
 
@@ -194,6 +196,8 @@ public class SalvoController {
             Salvo newSalvo = new Salvo(gamePlayer,salvo.getTurn(), salvo.getSalvoLocations());
             salvoRepository.save(newSalvo);
             gamePlayer.addSalvo(newSalvo);
+            gamePlayerRepository.save(gamePlayer);
+            gamePlayer.updateGameState();
             return this.createResponseEntity("Mensaje", "Salvos agregados", HttpStatus.CREATED);
         } else {
             return this.createResponseEntity("error", "Ya se ingresaron los salvos del turno correspondiente", HttpStatus.FORBIDDEN);
@@ -258,6 +262,8 @@ public class SalvoController {
 
         //verifico que sea una partida en la cual se encuentra el usuario autenticado en la aplicacion
         if (gamePlayer.getPlayer().getId() ==  authenticatedPlayerId) {
+                gamePlayer.updateGameState();
+                gamePlayerRepository.save(gamePlayer);
                 return gamePlayer.getGameplayerPovDTO();
         } else {
             return new ResponseEntity<>(this.getResponseMapDTO("error", "no autorizado"), HttpStatus.UNAUTHORIZED);

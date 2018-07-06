@@ -31,13 +31,14 @@ public class GamePlayer {
 
 
     private Date joinDate;
+    private GameState gameState;
 
     public GamePlayer(){}
 
     public GamePlayer(Player player, Game game){
         this.player = player;
         this.game = game;
-        this.game.setGameState(GameState.PLACESHIPS);
+        this.gameState = GameState.PLACESHIPS;
         this.joinDate = new Date();
     }
 
@@ -94,7 +95,7 @@ public class GamePlayer {
         Map<String,Object>  gamePlayerDTO = new LinkedHashMap<>();
         gamePlayerDTO.put("id", this.game.getId());
         gamePlayerDTO.put("created", this.game.getCreationDate());
-        gamePlayerDTO.put("gameState", this.game.getGameState());
+        gamePlayerDTO.put("gameState", this.gameState);
         gamePlayerDTO.put("gamePlayers", this.game.getGamePlayersDTO());
         gamePlayerDTO.put("ships", this.getGamePlayerShipsDTO());
         gamePlayerDTO.put("salvoes", this.game.getGameSalvoesDTO());
@@ -112,5 +113,28 @@ public class GamePlayer {
 
     public void addSalvo(Salvo salvo) {
         this.salvoes.add(salvo);
+    }
+
+    public GameState getGameState() {
+        return this.gameState;
+    }
+
+    public void updateGameState() {
+
+        //ver si gano
+        //ver si perdio
+        //ver si empato
+
+        if (this.hasNoShips()) {
+            this.gameState = GameState.PLACESHIPS;
+        } else if (this.game.bothPlayersHaveShips()) {
+            this.gameState = GameState.PLAY;
+        } else {
+            this.gameState = GameState.WAIT;
+        }
+    }
+
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
     }
 }
