@@ -67,10 +67,6 @@ public class Ship {
     }
 
     public String getShipTypeAsString() {
-        if (this.shipType == ShipType.PATROL_BOAT) {
-            return "patrolboat";
-        } else {
-            return this.shipType.name().toLowerCase();
-        }
+        return this.shipType.name().toLowerCase();
     }
 }

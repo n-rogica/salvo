@@ -13,28 +13,13 @@ import com.accenture.salvo.repository.SalvoRepository;
 import com.accenture.salvo.model.ships.Ship;
 import com.accenture.salvo.repository.ShipRepository;
 import com.accenture.salvo.model.ships.ShipType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.WebAttributes;
-import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.*;
 
 @SpringBootApplication
@@ -114,7 +99,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
 
 		locations = new String[]{"B4", "B5"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
-		Ship ship3 = new Ship(ShipType.PATROL_BOAT, g1pBauergp1BauerObrian, arrayLocations);
+		Ship ship3 = new Ship(ShipType.PATROLBOAT, g1pBauergp1BauerObrian, arrayLocations);
 
 		locations = new String[]{"B5", "C5", "D5"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
@@ -122,7 +107,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
 
 		locations = new String[]{"F1", "F2"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
-		Ship ship5 = new Ship(ShipType.PATROL_BOAT, g1pObriangp2BauerObrian, arrayLocations);
+		Ship ship5 = new Ship(ShipType.PATROLBOAT, g1pObriangp2BauerObrian, arrayLocations);
 
 		locations = new String[]{"B5", "C5", "D5"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
@@ -130,7 +115,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
 
 		locations = new String[]{"C6","C7"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
-		Ship ship7 = new Ship(ShipType.PATROL_BOAT, g2pBauergp1BauerObrian2, arrayLocations);
+		Ship ship7 = new Ship(ShipType.PATROLBOAT, g2pBauergp1BauerObrian2, arrayLocations);
 
 		locations = new String[]{"A2", "A3", "A4"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
@@ -138,7 +123,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
 
 		locations = new String[]{"G6","H6"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
-		Ship ship9 = new Ship(ShipType.PATROL_BOAT, g2pObraingp2BauerObrian2, arrayLocations);
+		Ship ship9 = new Ship(ShipType.PATROLBOAT, g2pObraingp2BauerObrian2, arrayLocations);
 
 		locations = new String[]{"B5","C5","D5"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
@@ -146,7 +131,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
 
 		locations = new String[]{"C6", "C7"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
-		Ship ship11 = new Ship(ShipType.PATROL_BOAT, g3pObriangp1ObrianAlmeida, arrayLocations);
+		Ship ship11 = new Ship(ShipType.PATROLBOAT, g3pObriangp1ObrianAlmeida, arrayLocations);
 
 		locations = new String[]{"A2","A3","A4"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
@@ -154,7 +139,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
 
 		locations = new String[]{"G6","H6"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
-		Ship ship13 = new Ship(ShipType.PATROL_BOAT, g3pAlmeidagp2ObrianAlmeida, arrayLocations);
+		Ship ship13 = new Ship(ShipType.PATROLBOAT, g3pAlmeidagp2ObrianAlmeida, arrayLocations);
 
 		locations = new String[]{"B5","C5","D5"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
@@ -162,7 +147,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
 
 		locations = new String[]{"C6","C7"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
-		Ship ship15 = new Ship(ShipType.PATROL_BOAT, g4pObriangp1ObrianBauer, arrayLocations);
+		Ship ship15 = new Ship(ShipType.PATROLBOAT, g4pObriangp1ObrianBauer, arrayLocations);
 
 		locations = new String[]{"A2","A3","A4"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
@@ -170,7 +155,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
 
 		locations = new String[]{"G6","H6"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
-		Ship ship17 = new Ship(ShipType.PATROL_BOAT, g4pBauergp2ObrianBauer, arrayLocations);
+		Ship ship17 = new Ship(ShipType.PATROLBOAT, g4pBauergp2ObrianBauer, arrayLocations);
 
 		locations = new String[]{"B5","C5","D5"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
@@ -178,7 +163,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
 
 		locations = new String[]{"C6","C7"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
-		Ship ship19 = new Ship(ShipType.PATROL_BOAT, g5pAlmeidagp1AlmeidaBauer, arrayLocations);
+		Ship ship19 = new Ship(ShipType.PATROLBOAT, g5pAlmeidagp1AlmeidaBauer, arrayLocations);
 
 		locations = new String[]{"A2","A3","A4"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
@@ -186,7 +171,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
 
 		locations = new String[]{"G6","H6"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
-		Ship ship21 = new Ship(ShipType.PATROL_BOAT, g5pBauergp2AlmeidaBauer, arrayLocations);
+		Ship ship21 = new Ship(ShipType.PATROLBOAT, g5pBauergp2AlmeidaBauer, arrayLocations);
 
 		locations = new String[]{"B5","C5","D5"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
@@ -194,7 +179,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
 
 		locations = new String[]{"C6","D7"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
-		Ship ship23 = new Ship(ShipType.PATROL_BOAT, g6pKbauergp1Kbauer, arrayLocations);
+		Ship ship23 = new Ship(ShipType.PATROLBOAT, g6pKbauergp1Kbauer, arrayLocations);
 
 		locations = new String[]{"B5","C5","D5"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
@@ -202,7 +187,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
 
 		locations = new String[]{"C6","C7"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
-		Ship ship25 = new Ship(ShipType.PATROL_BOAT, g8pKbauergp1KbauerAlmeida, arrayLocations);
+		Ship ship25 = new Ship(ShipType.PATROLBOAT, g8pKbauergp1KbauerAlmeida, arrayLocations);
 
 		locations = new String[]{"A2","A3","A4"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
@@ -210,7 +195,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
 
 		locations = new String[]{"G6","H6"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
-		Ship ship27 = new Ship(ShipType.PATROL_BOAT, g8pAlmeidagp2KbauerAlmeida, arrayLocations);
+		Ship ship27 = new Ship(ShipType.PATROLBOAT, g8pAlmeidagp2KbauerAlmeida, arrayLocations);
 
 
 

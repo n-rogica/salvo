@@ -16,6 +16,7 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     private final Date creationDate;
+    private GameState gameState;
 
     @OneToMany(mappedBy = "game", fetch = FetchType.EAGER)
     private Set<GamePlayer> gamePlayers = new HashSet<>();
@@ -25,14 +26,24 @@ public class Game {
 
     public Game(){
         this.creationDate = new Date();
+        this.gameState = GameState.PLACESHIPS;
     }
 
     public Game(Date date){
         this.creationDate = date;
+        this.gameState = GameState.PLACESHIPS;
     }
 
     public Date getCreationDate(){
         return this.creationDate;
+    }
+
+    public GameState getGameState() {
+        return this.gameState;
+    }
+
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
     }
 
     @JsonIgnore
@@ -78,6 +89,12 @@ public class Game {
 
     public Object getHitsDTO(long idOfRequestPlayer) {
         Map<String,Object> hitsDTO = new LinkedHashMap<>();
+
+        if (this.gamePlayers.size()!= 2) {
+            hitsDTO.put("self", new ArrayList<>());
+            hitsDTO.put("opponent", new ArrayList<>());
+            return hitsDTO;
+        }
         Iterator<GamePlayer> gpIt = this.gamePlayers.iterator();
         GamePlayer gp1 = gpIt.next();
         GamePlayer gp2 = gpIt.next();
@@ -87,7 +104,7 @@ public class Game {
             hitsDTO.put("opponent", this.processSalvoes(gp1,gp2));
         } else {
             hitsDTO.put("self", this.processSalvoes(gp1, gp2));
-            hitsDTO.put("opponet", this.processSalvoes(gp2,gp1));
+            hitsDTO.put("opponent", this.processSalvoes(gp2,gp1));
         }
         return hitsDTO;
     }

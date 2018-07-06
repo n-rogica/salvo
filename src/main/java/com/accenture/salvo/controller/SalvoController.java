@@ -3,6 +3,7 @@ package com.accenture.salvo.controller;
 
 import com.accenture.salvo.model.games.Game;
 import com.accenture.salvo.model.games.GamePlayer;
+import com.accenture.salvo.model.games.GameState;
 import com.accenture.salvo.model.salvoes.Salvo;
 import com.accenture.salvo.model.ships.Ship;
 import com.accenture.salvo.model.ships.ShipType;
@@ -71,13 +72,6 @@ public class SalvoController {
         if (authenticatedPlayer == null) {
             return new ResponseEntity<>(this.getResponseMapDTO("error", "No estas logueado capo"), HttpStatus.UNAUTHORIZED);
         } else {
-            //codigo original
-            /*Game game = new Game();
-            GamePlayer gamePlayer = new GamePlayer(authenticatedPlayer,game);
-            gameRepository.save(game);
-            gamePlayerRepository.save(gamePlayer);*/
-
-            //REFACTOR
             GamePlayer gamePlayer = new GamePlayer(authenticatedPlayer, gameRepository.save(new Game()));
             gamePlayerRepository.save(gamePlayer);
             return this.createResponseEntity("gpid", gamePlayer.getId(), HttpStatus.CREATED);
@@ -137,6 +131,7 @@ public class SalvoController {
             shipRepository.save(newShip);
             gamePlayer.addShip(newShip);
         });
+        gamePlayer.getGame().setGameState(GameState.WAITINGFOROPP);
         return this.createResponseEntity("mensaje", "Barcos agregados", HttpStatus.CREATED);
     } else {
         return this.createResponseEntity("error", "Ya se colocaron los barcos", HttpStatus.FORBIDDEN);
@@ -263,7 +258,7 @@ public class SalvoController {
 
         //verifico que sea una partida en la cual se encuentra el usuario autenticado en la aplicacion
         if (gamePlayer.getPlayer().getId() ==  authenticatedPlayerId) {
-            return gamePlayer.getGameplayerPovDTO();
+                return gamePlayer.getGameplayerPovDTO();
         } else {
             return new ResponseEntity<>(this.getResponseMapDTO("error", "no autorizado"), HttpStatus.UNAUTHORIZED);
         }

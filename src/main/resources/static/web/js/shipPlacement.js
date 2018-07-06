@@ -142,7 +142,6 @@ function renderPositions(positions) {
 	}
 	console.log(shipData);
 	shipsJSON = JSON.stringify(shipData);
-
 }
 
 
