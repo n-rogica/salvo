@@ -269,7 +269,7 @@ public class SalvoController {
         //verifico que sea una partida en la cual se encuentra el usuario autenticado en la aplicacion
         if (gamePlayer.getPlayer().getId() ==  authenticatedPlayerId) {
                 gamePlayer.updateGameState();
-                if (gamePlayer.gameFinished()) {
+                if (gamePlayer.gameFinished() && (gamePlayer.getGame().getScores().size() != 2)) {
                     this.updateScores(gamePlayer.getGameState(), gamePlayer);
                 }
                 gamePlayerRepository.save(gamePlayer);
