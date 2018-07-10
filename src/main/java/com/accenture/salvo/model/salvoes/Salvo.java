@@ -56,4 +56,13 @@ public class Salvo {
         salvoDTO.put("locations", this.salvoLocations);
         return salvoDTO;
     }
+
+    public boolean checkRepeatedLocations(List<String> salvoLocations) {
+        for (String location: salvoLocations) {
+            if (this.salvoLocations.contains(location)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

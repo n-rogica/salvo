@@ -1,9 +1,7 @@
 package com.accenture.salvo.controller;
 
 
-import com.accenture.salvo.model.games.Game;
-import com.accenture.salvo.model.games.GamePlayer;
-import com.accenture.salvo.model.games.GameState;
+import com.accenture.salvo.model.games.*;
 import com.accenture.salvo.model.salvoes.Salvo;
 import com.accenture.salvo.model.ships.Ship;
 import com.accenture.salvo.repository.*;
@@ -28,6 +26,9 @@ public class SalvoController {
 
     @Autowired
     GameRepository gameRepository;
+
+    @Autowired
+    ScoreRepository scoreRepository;
 
     @Autowired
     GamePlayerRepository gamePlayerRepository;
@@ -131,6 +132,7 @@ public class SalvoController {
             shipRepository.save(newShip);
             gamePlayer.addShip(newShip);
         });
+        gamePlayer.setGameState(GameState.WAIT);
         gamePlayer.updateGameState();
         gamePlayerRepository.save(gamePlayer);
         return this.createResponseEntity("mensaje", "Barcos agregados", HttpStatus.CREATED);
@@ -191,13 +193,14 @@ public class SalvoController {
 
 
         //Verifico que el turno que le toca al usuario se corresponda con el turno del salvo
-        //TODO modificar cuando se implemente un tracking del turno global desde el game
-        if (this.canPlaceSalvoes(gamePlayer, salvo)) {
-            Salvo newSalvo = new Salvo(gamePlayer,salvo.getTurn(), salvo.getSalvoLocations());
+        Salvo newSalvo = new Salvo(gamePlayer,gamePlayer.getSalvoes().size()+1, salvo.getSalvoLocations());
+        if (this.canPlaceSalvoes(gamePlayer, newSalvo)) {
             salvoRepository.save(newSalvo);
             gamePlayer.addSalvo(newSalvo);
-            gamePlayerRepository.save(gamePlayer);
+            gamePlayer.setGameState(GameState.PLAY);
             gamePlayer.updateGameState();
+            gamePlayerRepository.save(gamePlayer);
+
             return this.createResponseEntity("Mensaje", "Salvos agregados", HttpStatus.CREATED);
         } else {
             return this.createResponseEntity("error", "Ya se ingresaron los salvos del turno correspondiente", HttpStatus.FORBIDDEN);
@@ -210,7 +213,10 @@ public class SalvoController {
         if (gamePlayer.getSalvoes().isEmpty()) {
             return true;
         }
-        return gamePlayer.getSalvoes().size() < salvo.getTurn();
+        if ((salvo.getTurn() == gamePlayer.getSalvoes().size() +1) && (!gamePlayer.repeatedSalvo(salvo.getSalvoLocations()))) {
+            return true;
+        }
+        return false;
     }
 
 
@@ -263,10 +269,30 @@ public class SalvoController {
         //verifico que sea una partida en la cual se encuentra el usuario autenticado en la aplicacion
         if (gamePlayer.getPlayer().getId() ==  authenticatedPlayerId) {
                 gamePlayer.updateGameState();
+                if (gamePlayer.gameFinished()) {
+                    this.updateScores(gamePlayer.getGameState(), gamePlayer);
+                }
                 gamePlayerRepository.save(gamePlayer);
                 return gamePlayer.getGameplayerPovDTO();
         } else {
             return new ResponseEntity<>(this.getResponseMapDTO("error", "no autorizado"), HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    private void updateScores(GameState gameState, GamePlayer gamePlayerOfRequest) {
+        switch (gameState) {
+            case WON:
+                scoreRepository.save(new Score(1.0, gamePlayerOfRequest.getGame(), gamePlayerOfRequest.getPlayer()));
+                scoreRepository.save(new Score(0.0, gamePlayerOfRequest.getGame(), gamePlayerOfRequest.getOpponent()));
+                break;
+            case LOST:
+                scoreRepository.save(new Score(0.0, gamePlayerOfRequest.getGame(), gamePlayerOfRequest.getPlayer()));
+                scoreRepository.save(new Score(1.0, gamePlayerOfRequest.getGame(), gamePlayerOfRequest.getOpponent()));
+                break;
+            case TIE:
+                scoreRepository.save(new Score(0.5, gamePlayerOfRequest.getGame(), gamePlayerOfRequest.getPlayer()));
+                scoreRepository.save(new Score(0.5, gamePlayerOfRequest.getGame(), gamePlayerOfRequest.getOpponent()));
+                break;
         }
     }
 

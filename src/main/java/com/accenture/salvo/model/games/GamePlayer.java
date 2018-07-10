@@ -91,6 +91,15 @@ public class GamePlayer {
         return gamePlayerDTO;
     }
 
+    public boolean repeatedSalvo(List<String> salvoLocations) {
+        for (Salvo salvo: this.salvoes) {
+            if (salvo.checkRepeatedLocations(salvoLocations)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Map<String,Object> getGameplayerPovDTO() {
         Map<String,Object>  gamePlayerDTO = new LinkedHashMap<>();
         gamePlayerDTO.put("id", this.game.getId());
@@ -120,21 +129,53 @@ public class GamePlayer {
     }
 
     public void updateGameState() {
+        //verifico si la partida esta terminada
+        if (!this.salvoes.isEmpty()) {
+            GameResult gameResult = this.game.getResult(this.id);
+            if (gameResult != GameResult.TBD) {
+               this.gameState = GameState.valueOf(gameResult.toString());
+               return;
+            }
 
-        //ver si gano
-        //ver si perdio
-        //ver si empato
+            //no termino la partida
+            if (this.salvoes.size() > this.game.getOpponent(this.id).getSalvoes().size()) {
+                this.gameState = GameState.WAIT;
+                return;
+            } else {
+                this.gameState = GameState.PLAY;
+                return;
+            }
+        }
 
         if (this.hasNoShips()) {
             this.gameState = GameState.PLACESHIPS;
-        } else if (this.game.bothPlayersHaveShips()) {
+            return;
+        }
+
+        if ((this.gameState == GameState.WAIT) && (this.game.bothPlayersHaveShips())) {
             this.gameState = GameState.PLAY;
-        } else {
-            this.gameState = GameState.WAIT;
+            return;
         }
     }
 
     public void setGameState(GameState gameState) {
         this.gameState = gameState;
+    }
+
+    public boolean gameFinished() {
+        switch (gameState) {
+            case WON:
+                return true;
+            case TIE:
+                return true;
+            case LOST:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public Player getOpponent() {
+        return this.game.getOpponent(this.id).getPlayer();
     }
 }

@@ -77,7 +77,7 @@ public class Game {
         return this.scores.stream().count();
     }
 
-    public Object getHitsDTO(long idOfRequestPlayer) {
+    public Map<String,Object> getHitsDTO(long idOfRequestPlayer) {
         Map<String,Object> hitsDTO = new LinkedHashMap<>();
 
         if (this.gamePlayers.size()!= 2) {
@@ -172,6 +172,69 @@ public class Game {
                 return false;
             }
             return true;
+        }
+    }
+
+
+    public GameResult getResult(long idOfRequestGP) {
+        if (this.gamePlayers.size()!= 2) {
+            return GameResult.TBD;
+        }
+        Iterator<GamePlayer> gpIt = this.gamePlayers.iterator();
+        GamePlayer gp1 = gpIt.next();
+        GamePlayer gp2 = gpIt.next();
+        if (gp1.getId() == idOfRequestGP) {
+            return this.getGameResult(gp1,gp2);
+        } else {
+            return this.getGameResult(gp2,gp1);
+        }
+
+    }
+
+    private GameResult getGameResult(GamePlayer gpOfRequest, GamePlayer opponent) {
+        if (this.AllShipsSunk(gpOfRequest, opponent)) {
+            if (this.AllShipsSunk(opponent, gpOfRequest)) {
+                return GameResult.TIE;
+            } else {
+                return GameResult.WON;
+            }
+        }
+
+        if (this.AllShipsSunk(opponent,gpOfRequest)) {
+            return GameResult.LOST;
+        }
+
+        return GameResult.TBD;
+    }
+
+    public boolean AllShipsSunk(GamePlayer attacker, GamePlayer receiver) {
+        int numberOfPossibleHits = receiver.getShips().stream().mapToInt(ship -> ship.getShipType().getLenght()).sum();
+        int numberOfActualHits = 0;
+        for (Salvo salvo: attacker.getSalvoes()) {
+            for (Ship ship: receiver.getShips()) {
+                numberOfActualHits += ship.getShipLocations().stream().
+                        filter(location -> salvo.getSalvoLocations().contains(location)).count();
+            }
+        }
+        return numberOfActualHits == numberOfPossibleHits;
+    }
+
+    public void setBothPlayersToPlay() {
+        Iterator<GamePlayer> gpIt = this.gamePlayers.iterator();
+        GamePlayer gp1 = gpIt.next();
+        GamePlayer gp2 = gpIt.next();
+        gp1.setGameState(GameState.WAIT);
+        gp2.setGameState(GameState.WAIT);
+    }
+
+    public GamePlayer getOpponent(long id) {
+        Iterator<GamePlayer> gpIt = this.gamePlayers.iterator();
+        GamePlayer gp1 = gpIt.next();
+        GamePlayer gp2 = gpIt.next();
+        if (gp1.getId() == id) {
+            return gp2;
+        } else {
+            return gp1;
         }
     }
 }
