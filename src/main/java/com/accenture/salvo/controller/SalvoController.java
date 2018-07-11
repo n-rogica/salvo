@@ -1,6 +1,7 @@
 package com.accenture.salvo.controller;
 
 
+import com.accenture.salvo.ResponseEntityMsgs;
 import com.accenture.salvo.model.games.*;
 import com.accenture.salvo.model.salvoes.Salvo;
 import com.accenture.salvo.model.ships.Ship;
@@ -25,25 +26,25 @@ public class SalvoController {
 
 
     @Autowired
-    GameRepository gameRepository;
+    private GameRepository gameRepository;
 
     @Autowired
-    ScoreRepository scoreRepository;
+    private ScoreRepository scoreRepository;
 
     @Autowired
-    GamePlayerRepository gamePlayerRepository;
+    private GamePlayerRepository gamePlayerRepository;
 
     @Autowired
-    PlayerRepository playerRepository;
+    private PlayerRepository playerRepository;
 
     @Autowired
-    ShipRepository shipRepository;
+    private ShipRepository shipRepository;
 
     @Autowired
-    SalvoRepository salvoRepository;
+    private SalvoRepository salvoRepository;
 
 
-    /*=========================GET GAME ID=========================*/
+    /*===============================================GET GAME ID======================================================*/
 
     @RequestMapping(path= "/games", method = RequestMethod.GET)
     /*metodo que devuelve un json con el detalle de todos los juegos*/
@@ -63,22 +64,24 @@ public class SalvoController {
         return gamesDTO;
     }
 
-    /*=========================CREATE GAME===================================*/
+    /*==========================================CREATE GAME===========================================================*/
 
     /*metodo que verifica si el usuario esta autenticado y crea un nuevo juego*/
     @RequestMapping(path= "/games", method = RequestMethod.POST)
     public Object createGame() {
         Player authenticatedPlayer = this.getAuthenticatedPlayer();
         if (authenticatedPlayer == null) {
-            return new ResponseEntity<>(this.getResponseMapDTO("error", "No estas logueado capo"), HttpStatus.UNAUTHORIZED);
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_NO_LOGUEADO,
+                    HttpStatus.UNAUTHORIZED);
         } else {
             GamePlayer gamePlayer = new GamePlayer(authenticatedPlayer, gameRepository.save(new Game()));
             gamePlayerRepository.save(gamePlayer);
-            return this.createResponseEntity("gpid", gamePlayer.getId(), HttpStatus.CREATED);
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_SUCCESS,
+                    ResponseEntityMsgs.MSG_JUEGO_CREADO, HttpStatus.CREATED);
         }
     }
 
-    /*=========================GET SHIPS=========================*/
+    /*==============================================GET SHIPS=========================================================*/
 
     /*Metodo que devuelve los ships del jugador pasado por parametro en la url*/
     @RequestMapping(path="/games/players/{gamePlayerId}/ships", method = RequestMethod.GET)
@@ -89,11 +92,18 @@ public class SalvoController {
         Player player = getAuthenticatedPlayer();
 
         if (gamePlayer == null) {
-            return this.createResponseEntity("error", "no se pudo obtener la informacion", HttpStatus.NOT_FOUND);
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_JUGADOR_NO_ENCONTRADO,
+                    HttpStatus.NOT_FOUND);
         }
 
-        if (player == null || (player.getId() != gamePlayer.getPlayer().getId())) {
-            return this.createResponseEntity("error", "no quieras hacer trampa capo", HttpStatus.UNAUTHORIZED);
+        if (player == null) {
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR,
+                    ResponseEntityMsgs.MSG_NO_LOGUEADO, HttpStatus.UNAUTHORIZED);
+        }
+
+        if (player.getId() != gamePlayer.getPlayer().getId()) {
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR,
+                    ResponseEntityMsgs.MSG_JUGADOR_DISTINTO_AL_LOGUEADO, HttpStatus.UNAUTHORIZED);
         }
 
         playerShips.put("gpid", gamePlayer.getId());
@@ -102,7 +112,7 @@ public class SalvoController {
         return playerShips;
     }
 
-    /*========================================SET SHIPS===============================================================*/
+    /*============================================SET SHIPS===========================================================*/
 
     /*Metodo que recibe una lista de ships en el request y si se cumplen las condiciones los asocia con el gameplayer
     indicado por parametro
@@ -112,37 +122,38 @@ public class SalvoController {
     Player authenticatedPlayer = getAuthenticatedPlayer();
 
     if (authenticatedPlayer == null) {
-        return this.createResponseEntity("error", "no estas logueado capo", HttpStatus.UNAUTHORIZED);
+        return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_NO_LOGUEADO,
+                HttpStatus.UNAUTHORIZED);
     }
 
     GamePlayer gamePlayer = gamePlayerRepository.findOne(gpId);
     if (gamePlayer == null) {
-        return this.createResponseEntity("error", "no se pudo acceder al juego", HttpStatus.NOT_FOUND);
+        return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_JUGADOR_NO_ENCONTRADO,
+                HttpStatus.NOT_FOUND);
     }
 
     if (authenticatedPlayer.getId() != gamePlayer.getPlayer().getId()) {
-        return this.createResponseEntity("error", "no se pueden agregar barcos", HttpStatus.UNAUTHORIZED);
+        return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR,
+                ResponseEntityMsgs.MSG_JUGADOR_DISTINTO_AL_LOGUEADO, HttpStatus.UNAUTHORIZED);
     }
 
     //Verifique que el usuario esta logueado, el gameplayer id existe y es el correspondiente al usuario logueado
 
     if (gamePlayer.hasNoShips()) {
-        ships.stream().forEach(ship -> {
-            Ship newShip = new Ship(ship.getShipType(), gamePlayer, ship.getShipLocations());
-            shipRepository.save(newShip);
-            gamePlayer.addShip(newShip);
-        });
+        ships.forEach(ship -> gamePlayer.addShip(new Ship(ship.getShipType(), gamePlayer, ship.getShipLocations())));
         gamePlayer.setGameState(GameState.WAIT);
         gamePlayer.updateGameState();
         gamePlayerRepository.save(gamePlayer);
-        return this.createResponseEntity("mensaje", "Barcos agregados", HttpStatus.CREATED);
+        return this.createResponseEntity(ResponseEntityMsgs.KEY_SUCCESS,
+                ResponseEntityMsgs.MSG_SHIPS_AGREGADOS, HttpStatus.CREATED);
     } else {
-        return this.createResponseEntity("error", "Ya se colocaron los barcos", HttpStatus.FORBIDDEN);
+        return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_SHIPS_NO_AGREGADOS,
+                HttpStatus.FORBIDDEN);
         }
     }
 
 
-    /*==============================GET SALVOES=======================*/
+    /*============================================GET SALVOES=========================================================*/
 
     /*Metodo que devuelve los salvos del jugador pasado por parametro en la url*/
     @RequestMapping(path="/games/players/{gamePlayerId}/salvoes", method = RequestMethod.GET)
@@ -152,14 +163,20 @@ public class SalvoController {
 
         Player player = getAuthenticatedPlayer();
 
-        if (player == null || (player.getId() != gamePlayer.getPlayer().getId())) {
-            return this.createResponseEntity("error", "no quieras hacer trampa capo", HttpStatus.FORBIDDEN);
+        if (player == null) {
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_NO_LOGUEADO,
+                    HttpStatus.FORBIDDEN);
+        }
+
+        if (player.getId() != gamePlayer.getPlayer().getId()) {
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR,
+                    ResponseEntityMsgs.MSG_JUGADOR_DISTINTO_AL_LOGUEADO, HttpStatus.FORBIDDEN);
         }
 
         if (gamePlayer == null) {
-            return this.createResponseEntity("error", "Id de gameplayer incorrecto", HttpStatus.UNAUTHORIZED);
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_JUGADOR_NO_ENCONTRADO,
+                    HttpStatus.UNAUTHORIZED);
         }
-
         playerSalvoes.put("gpid", gamePlayer.getId());
         playerSalvoes.put("salvoes", gamePlayer.getSalvoesDTO());
         gamePlayer.updateGameState();
@@ -167,7 +184,7 @@ public class SalvoController {
     }
 
 
-    /*=================================SET SALVOES==================================================*/
+    /*==============================================SET SALVOES=======================================================*/
     /* Metodo que recibe por parametro una lista de salvos y si se cumplen las condiciones los asocia
     con el player indicado
      */
@@ -176,49 +193,51 @@ public class SalvoController {
         Player authenticatedPlayer = getAuthenticatedPlayer();
 
         if (authenticatedPlayer == null) {
-            return this.createResponseEntity("error", "No esta autenticado", HttpStatus.UNAUTHORIZED);
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_NO_LOGUEADO,
+                    HttpStatus.UNAUTHORIZED);
         }
 
         GamePlayer gamePlayer = gamePlayerRepository.findOne(gpId);
 
         if (gamePlayer == null) {
-            return this.createResponseEntity("error", "id de gameplayer incorrecto", HttpStatus.UNAUTHORIZED);
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_JUGADOR_NO_ENCONTRADO,
+                    HttpStatus.UNAUTHORIZED);
         }
 
         if (authenticatedPlayer.getId() != gamePlayer.getPlayer().getId()) {
-            return this.createResponseEntity("error", "id de jugador no coincide con el juego", HttpStatus.FORBIDDEN);
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR,
+                    ResponseEntityMsgs.MSG_JUGADOR_DISTINTO_AL_LOGUEADO, HttpStatus.FORBIDDEN);
         }
 
         //Verifique que el usuario esta logueado, el gameplayer id existe y es el correspondiente al usuario logueado
 
         Salvo newSalvo = new Salvo(gamePlayer,gamePlayer.getSalvoes().size()+1, salvo.getSalvoLocations());
         if (this.canPlaceSalvoes(gamePlayer, newSalvo)) {
-            salvoRepository.save(newSalvo);
             gamePlayer.addSalvo(newSalvo);
             gamePlayer.setGameState(GameState.WAIT);
             gamePlayer.updateGameState();
             gamePlayerRepository.save(gamePlayer);
-
-            return this.createResponseEntity("Mensaje", "Salvos agregados", HttpStatus.CREATED);
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_SUCCESS, ResponseEntityMsgs.MSG_SALVOS_AGREGADOS,
+                    HttpStatus.CREATED);
         } else {
-            return this.createResponseEntity("error", "Ya se ingresaron los salvos del turno correspondiente", HttpStatus.FORBIDDEN);
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_SALVOS_YA_AGREGADOS,
+                    HttpStatus.FORBIDDEN);
         }
-
-
     }
 
     private boolean canPlaceSalvoes(GamePlayer gamePlayer, Salvo salvo) {
         if (gamePlayer.getSalvoes().isEmpty()) {
             return true;
         }
-        if ((salvo.getTurn() == gamePlayer.getSalvoes().size() +1) && (!gamePlayer.repeatedSalvo(salvo.getSalvoLocations()))) {
+        if ((salvo.getTurn() == gamePlayer.getSalvoes().size() +1) &&
+                (!gamePlayer.repeatedSalvo(salvo.getSalvoLocations()))) {
             return true;
         }
         return false;
     }
 
 
-    /*=====================================JOIN GAME===========================================*/
+    /*==================================================JOIN GAME=====================================================*/
 
     /*Metodo que permite unirse a la partida ingresada por parametro*/
     @RequestMapping(path="/game/{nn}/players", method = RequestMethod.POST)
@@ -226,22 +245,24 @@ public class SalvoController {
         Player player = getAuthenticatedPlayer();
 
         if (player == null) {
-            return new ResponseEntity<>(this.getResponseMapDTO("error", "No esta autenticado"), HttpStatus.UNAUTHORIZED);
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_NO_LOGUEADO,
+                    HttpStatus.UNAUTHORIZED);
         }
 
         Game game = gameRepository.findOne(gameId);
 
         if (game == null) {
-            return new ResponseEntity<>(this.getResponseMapDTO("error", "Id de juego invalido"), HttpStatus.FORBIDDEN);
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_JUEGO_NO_ENCONTRADO,
+                    HttpStatus.FORBIDDEN);
         }
 
         if (game.countGamePlayers() == 2) {
-            return new ResponseEntity<>(this.getResponseMapDTO("error", "Juego completo"), HttpStatus.FORBIDDEN);
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_JUEGO_COMPLETO,
+                    HttpStatus.FORBIDDEN);
         }
-
-        GamePlayer gamePlayer = new GamePlayer(player,game);
-        gamePlayerRepository.save(gamePlayer);
-        return new ResponseEntity<>(this.getResponseMapDTO("gpid", gamePlayer.getId()), HttpStatus.CREATED);
+        gamePlayerRepository.save(new GamePlayer(player,game));
+        return this.createResponseEntity(ResponseEntityMsgs.KEY_SUCCESS, ResponseEntityMsgs.MSG_UNIENDOSE_A_LA_PARTIDA,
+                HttpStatus.CREATED);
     }
 
     /*===============================================GET LEADERBOARD==================================================*/
@@ -274,7 +295,8 @@ public class SalvoController {
                 gamePlayerRepository.save(gamePlayer);
                 return gamePlayer.getGameplayerPovDTO();
         } else {
-            return new ResponseEntity<>(this.getResponseMapDTO("error", "no autorizado"), HttpStatus.UNAUTHORIZED);
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR,
+                    ResponseEntityMsgs.MSG_JUGADOR_DISTINTO_AL_LOGUEADO, HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -305,17 +327,20 @@ public class SalvoController {
                                                @RequestParam("password") String password) {
         //Nombre de usuario vacio
         if (username.isEmpty() ) {
-            return new ResponseEntity<>(this.getResponseMapDTO("error","Nombre de usuario no ingresado"), HttpStatus.FORBIDDEN);
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR,
+                    ResponseEntityMsgs.MSG_NOMBRE_DE_USUARIO_INEXISTENTE, HttpStatus.FORBIDDEN);
         }
 
         Player player = playerRepository.findByUserName(username);
         //Nombre de usuario existente
         if (player != null) {
-            return new ResponseEntity<>(this.getResponseMapDTO("error","Ya existe un usuario con ese nombre"), HttpStatus.CONFLICT);
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR,
+                    ResponseEntityMsgs.MSG_NOMBRE_DE_USUARIO_REPETIDO, HttpStatus.CONFLICT);
         }
 
         playerRepository.save(new Player(username,password));
-        return new ResponseEntity<>(this.getResponseMapDTO("resultado: ","Usuario creado"), HttpStatus.CREATED);
+        return new ResponseEntity<>(this.getResponseMapDTO(ResponseEntityMsgs.KEY_SUCCESS,
+                ResponseEntityMsgs.MSG_USUARIO_CREADO), HttpStatus.CREATED);
     }
 
 

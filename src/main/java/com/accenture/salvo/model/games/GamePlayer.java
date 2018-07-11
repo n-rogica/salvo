@@ -23,10 +23,10 @@ public class GamePlayer {
     @JoinColumn(name = "game_id")
     private Game game;
 
-    @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Ship> ships = new HashSet<>();
 
-    @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Salvo> salvoes = new HashSet<>();
 
 
