@@ -129,32 +129,23 @@ public class GamePlayer {
     }
 
     public void updateGameState() {
-        //verifico si la partida esta terminada
-        if (!this.salvoes.isEmpty()) {
+
+        if ((this.gameState == GameState.WAIT) && (this.game.bothPlayersHaveShips())
+                && (this.game.salvosTurnMatch())) {
+            //los dos jugadores tiraron salvos y estan esperando el resultado
+            //verifico si el jugador gano/perdio/empato
             GameResult gameResult = this.game.getResult(this.id);
             if (gameResult != GameResult.TBD) {
-               this.gameState = GameState.valueOf(gameResult.toString());
-               return;
+                //termino la partida
+                this.gameState = GameState.valueOf(gameResult.toString());
+                return;
             }
 
-            //no termino la partida
-            if (this.salvoes.size() > this.game.getOpponent(this.id).getSalvoes().size()) {
-                this.gameState = GameState.WAIT;
-                return;
-            } else {
+            //la partida no termino, ambos dispararon para el turno correspondiente y colocaron sus barcos
+            if (this.gameState != GameState.PLACESHIPS) {
                 this.gameState = GameState.PLAY;
                 return;
             }
-        }
-
-        if (this.hasNoShips()) {
-            this.gameState = GameState.PLACESHIPS;
-            return;
-        }
-
-        if ((this.gameState == GameState.WAIT) && (this.game.bothPlayersHaveShips())) {
-            this.gameState = GameState.PLAY;
-            return;
         }
     }
 

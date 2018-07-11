@@ -79,12 +79,10 @@ public class Game {
 
     public Map<String,Object> getHitsDTO(long idOfRequestPlayer) {
         Map<String,Object> hitsDTO = new LinkedHashMap<>();
-
         if (this.gamePlayers.size()!= 2) {
-            hitsDTO.put("self", new ArrayList<>());
-            hitsDTO.put("opponent", new ArrayList<>());
-            return hitsDTO;
+           return getPlaceHolderHitsDTO();
         }
+
         Iterator<GamePlayer> gpIt = this.gamePlayers.iterator();
         GamePlayer gp1 = gpIt.next();
         GamePlayer gp2 = gpIt.next();
@@ -99,19 +97,33 @@ public class Game {
         return hitsDTO;
     }
 
-    private List<Map<String,Object>> processSalvoes(GamePlayer attacker, GamePlayer receiver ) {
+    private List<Map<String,Object>> processSalvoes(GamePlayer attacker, GamePlayer receiver) {
         List<Map<String,Object>> processedSalvoesDTO = new LinkedList<>();
         Map<String,Integer> shipsStatusMap = this.createShipsStatusMap();
+        boolean hideLastSalvo = false;
+
+        if (attacker.getSalvoes().size() > receiver.getSalvoes().size()) {
+            //si un jugador disparo y el otro no, no tengo que revelar el resultado
+            //de ese salvo hasta que el otro haya disparado
+            hideLastSalvo = true;
+        }
 
         for (Salvo salvo: attacker.getSalvoes()) {
             Map<String, Object> processedTurnDTO = new LinkedHashMap<>();
             processedTurnDTO.put("turn", salvo.getTurn());
-            processedTurnDTO.put("hitLocations", salvo.getSalvoLocations());
-            process(salvo.getSalvoLocations(), receiver.getShips(), shipsStatusMap);
-            processedTurnDTO.put("damages", new LinkedHashMap<>(shipsStatusMap));
-            processedTurnDTO.put("missed", countMissedShots(salvo.getSalvoLocations().size(),shipsStatusMap));
-            processedSalvoesDTO.add(processedTurnDTO);
-            resetShipStatusMap(shipsStatusMap);
+            if (hideLastSalvo && (salvo.getTurn() == attacker.getSalvoes().size())) {
+                processedTurnDTO.put("hitLocations", new ArrayList<>());
+                processedTurnDTO.put("damages", new LinkedHashMap<>());
+                processedTurnDTO.put("missed", -1);
+                processedSalvoesDTO.add(processedTurnDTO);
+            } else {
+                processedTurnDTO.put("hitLocations", salvo.getSalvoLocations());
+                process(salvo.getSalvoLocations(), receiver.getShips(), shipsStatusMap);
+                processedTurnDTO.put("damages", new LinkedHashMap<>(shipsStatusMap));
+                processedTurnDTO.put("missed", countMissedShots(salvo.getSalvoLocations().size(), shipsStatusMap));
+                processedSalvoesDTO.add(processedTurnDTO);
+                resetShipStatusMap(shipsStatusMap);
+            }
         }
         return processedSalvoesDTO;
     }
@@ -148,7 +160,7 @@ public class Game {
         return shipsStatusMap;
     }
 
-    private void process(List<String> salvoLocations, Set<Ship> ships, Map<String,Integer> shipsStatusMap) {
+    private void process(List<String> salvoLocations, Set<Ship> ships, Map<String, Integer> shipsStatusMap) {
         salvoLocations.stream().forEach(salvoLocation -> checkShipHitted(salvoLocation,ships,shipsStatusMap));
     }
 
@@ -219,14 +231,6 @@ public class Game {
         return numberOfActualHits == numberOfPossibleHits;
     }
 
-    public void setBothPlayersToPlay() {
-        Iterator<GamePlayer> gpIt = this.gamePlayers.iterator();
-        GamePlayer gp1 = gpIt.next();
-        GamePlayer gp2 = gpIt.next();
-        gp1.setGameState(GameState.WAIT);
-        gp2.setGameState(GameState.WAIT);
-    }
-
     public GamePlayer getOpponent(long id) {
         Iterator<GamePlayer> gpIt = this.gamePlayers.iterator();
         GamePlayer gp1 = gpIt.next();
@@ -236,5 +240,23 @@ public class Game {
         } else {
             return gp1;
         }
+    }
+
+    public boolean salvosTurnMatch() {
+        if (this.gamePlayers.size() != 2) {
+            return false;
+
+        }
+        Iterator<GamePlayer> gpIt = this.gamePlayers.iterator();
+        GamePlayer gp1 = gpIt.next();
+        GamePlayer gp2 = gpIt.next();
+        return gp1.getSalvoes().size() == gp2.getSalvoes().size();
+    }
+
+    public Map<String,Object> getPlaceHolderHitsDTO() {
+        Map<String,Object> hitsDTO = new LinkedHashMap<>();
+        hitsDTO.put("self", new ArrayList<>());
+        hitsDTO.put("opponent", new ArrayList<>());
+        return  hitsDTO;
     }
 }

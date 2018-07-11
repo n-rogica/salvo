@@ -453,9 +453,15 @@ function makeGameRecordTable (hitsArray, gameRecordTableId) {
             hitsReport +=  "Missed shots " + addDamagesIcons(playTurn.missed, "missed") + " ";
         }
 
-        if (hitsReport === ""){
-            hitsReport = "All salvoes missed! No damages!"
+        if (hitsReport === "" && playTurn.missed === -1){
+            hitsReport = "Waiting for opponent"
+        } else {
+            if (hitsReport === "") {
+                hitsReport = "All salvoes missed! No damages!"
+            }
         }
+
+
 
         $('<tr><td class="textCenter">' + playTurn.turn + '</td><td>' + hitsReport + '</td></tr>').prependTo(tableId);
 

@@ -191,13 +191,11 @@ public class SalvoController {
 
         //Verifique que el usuario esta logueado, el gameplayer id existe y es el correspondiente al usuario logueado
 
-
-        //Verifico que el turno que le toca al usuario se corresponda con el turno del salvo
         Salvo newSalvo = new Salvo(gamePlayer,gamePlayer.getSalvoes().size()+1, salvo.getSalvoLocations());
         if (this.canPlaceSalvoes(gamePlayer, newSalvo)) {
             salvoRepository.save(newSalvo);
             gamePlayer.addSalvo(newSalvo);
-            gamePlayer.setGameState(GameState.PLAY);
+            gamePlayer.setGameState(GameState.WAIT);
             gamePlayer.updateGameState();
             gamePlayerRepository.save(gamePlayer);
 
@@ -264,6 +262,7 @@ public class SalvoController {
     @RequestMapping("/game_view/{nn}")
     public Object getGameById(@PathVariable("nn") Long gamePlayerId) {
         long authenticatedPlayerId = this.getAuthenticatedPlayer().getId();
+        boolean turnsMatch;
         GamePlayer gamePlayer = gamePlayerRepository.findOne(gamePlayerId);
 
         //verifico que sea una partida en la cual se encuentra el usuario autenticado en la aplicacion

@@ -28,6 +28,7 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				antMatchers("/**/audio/**").permitAll().
 				antMatchers("/api/leaderBoard").permitAll().
 				antMatchers("/api/games").permitAll().
+				antMatchers("/api/players").permitAll().
 				antMatchers("/api/**").hasAuthority("USER").
 				anyRequest().fullyAuthenticated();
 
