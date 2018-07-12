@@ -74,10 +74,12 @@ public class SalvoController {
             return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_NO_LOGUEADO,
                     HttpStatus.UNAUTHORIZED);
         } else {
-            GamePlayer gamePlayer = new GamePlayer(authenticatedPlayer, gameRepository.save(new Game()));
+            Game newGame = new Game();
+            gameRepository.save(newGame);
+            GamePlayer gamePlayer = new GamePlayer(authenticatedPlayer, newGame);
             gamePlayerRepository.save(gamePlayer);
-            return this.createResponseEntity(ResponseEntityMsgs.KEY_SUCCESS,
-                    ResponseEntityMsgs.MSG_JUEGO_CREADO, HttpStatus.CREATED);
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_GPID,
+                    gamePlayer.getId(), HttpStatus.CREATED);
         }
     }
 
@@ -115,8 +117,7 @@ public class SalvoController {
     /*============================================SET SHIPS===========================================================*/
 
     /*Metodo que recibe una lista de ships en el request y si se cumplen las condiciones los asocia con el gameplayer
-    indicado por parametro
-     */
+    indicado por parametro*/
     @RequestMapping(path="/games/players/{gamePlayerId}/ships", method = RequestMethod.POST)
     public Object setShipsLocations(@PathVariable("gamePlayerId") long gpId, @RequestBody List<Ship> ships) {
     Player authenticatedPlayer = getAuthenticatedPlayer();
@@ -140,12 +141,12 @@ public class SalvoController {
     //Verifique que el usuario esta logueado, el gameplayer id existe y es el correspondiente al usuario logueado
 
     if (gamePlayer.hasNoShips()) {
-        ships.forEach(ship -> gamePlayer.addShip(new Ship(ship.getShipType(), gamePlayer, ship.getShipLocations())));
+        gamePlayer.addShips(ships);
         gamePlayer.setGameState(GameState.WAIT);
         gamePlayer.updateGameState();
         gamePlayerRepository.save(gamePlayer);
-        return this.createResponseEntity(ResponseEntityMsgs.KEY_SUCCESS,
-                ResponseEntityMsgs.MSG_SHIPS_AGREGADOS, HttpStatus.CREATED);
+        return this.createResponseEntity(ResponseEntityMsgs.KEY_SUCCESS, ResponseEntityMsgs.MSG_SHIPS_AGREGADOS,
+                HttpStatus.CREATED);
     } else {
         return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_SHIPS_NO_AGREGADOS,
                 HttpStatus.FORBIDDEN);
@@ -161,22 +162,23 @@ public class SalvoController {
         Map<String,Object> playerSalvoes = new LinkedHashMap<>();
         GamePlayer gamePlayer = gamePlayerRepository.findOne(gpId);
 
-        Player player = getAuthenticatedPlayer();
+        Player authenticatedPlayer = getAuthenticatedPlayer();
 
-        if (player == null) {
+        if (authenticatedPlayer == null) {
             return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_NO_LOGUEADO,
                     HttpStatus.FORBIDDEN);
-        }
-
-        if (player.getId() != gamePlayer.getPlayer().getId()) {
-            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR,
-                    ResponseEntityMsgs.MSG_JUGADOR_DISTINTO_AL_LOGUEADO, HttpStatus.FORBIDDEN);
         }
 
         if (gamePlayer == null) {
             return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_JUGADOR_NO_ENCONTRADO,
                     HttpStatus.UNAUTHORIZED);
         }
+
+        if (authenticatedPlayer.getId() != gamePlayer.getPlayer().getId()) {
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR,
+                    ResponseEntityMsgs.MSG_JUGADOR_DISTINTO_AL_LOGUEADO, HttpStatus.FORBIDDEN);
+        }
+
         playerSalvoes.put("gpid", gamePlayer.getId());
         playerSalvoes.put("salvoes", gamePlayer.getSalvoesDTO());
         gamePlayer.updateGameState();
@@ -186,8 +188,8 @@ public class SalvoController {
 
     /*==============================================SET SALVOES=======================================================*/
     /* Metodo que recibe por parametro una lista de salvos y si se cumplen las condiciones los asocia
-    con el player indicado
-     */
+    con el player indicado*/
+
     @RequestMapping(path="/games/players/{gamePlayerId}/salvoes", method = RequestMethod.POST)
     public Object setSalvoes(@PathVariable("gamePlayerId") long gpId, @RequestBody Salvo salvo) {
         Player authenticatedPlayer = getAuthenticatedPlayer();
@@ -225,18 +227,6 @@ public class SalvoController {
         }
     }
 
-    private boolean canPlaceSalvoes(GamePlayer gamePlayer, Salvo salvo) {
-        if (gamePlayer.getSalvoes().isEmpty()) {
-            return true;
-        }
-        if ((salvo.getTurn() == gamePlayer.getSalvoes().size() +1) &&
-                (!gamePlayer.repeatedSalvo(salvo.getSalvoLocations()))) {
-            return true;
-        }
-        return false;
-    }
-
-
     /*==================================================JOIN GAME=====================================================*/
 
     /*Metodo que permite unirse a la partida ingresada por parametro*/
@@ -260,18 +250,18 @@ public class SalvoController {
             return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_JUEGO_COMPLETO,
                     HttpStatus.FORBIDDEN);
         }
-        gamePlayerRepository.save(new GamePlayer(player,game));
-        return this.createResponseEntity(ResponseEntityMsgs.KEY_SUCCESS, ResponseEntityMsgs.MSG_UNIENDOSE_A_LA_PARTIDA,
-                HttpStatus.CREATED);
+        GamePlayer gamePlayer = new GamePlayer(player, game);
+        gamePlayerRepository.save(gamePlayer);
+        return this.createResponseEntity(ResponseEntityMsgs.KEY_GPID, gamePlayer.getId(),HttpStatus.CREATED);
     }
 
     /*===============================================GET LEADERBOARD==================================================*/
 
+    /*metodo que devuelve el leaderboard con los resultados y el puntaje de cada jugador registrado en la aplicacion*/
     @RequestMapping("/leaderBoard")
     public List<Object> getLeaderBoard() {
         List<Player> players = playerRepository.findAll();
-        List<Object> leaderBoard = players.stream().map(player -> player.getScoreHistoryDTO()).collect(Collectors.toList());
-        return leaderBoard;
+        return players.stream().map(player -> player.getScoreHistoryDTO()).collect(Collectors.toList());
     }
 
     /*===============================================GET GAME BY ID===================================================*/
@@ -282,13 +272,18 @@ public class SalvoController {
      * informacion*/
     @RequestMapping("/game_view/{nn}")
     public Object getGameById(@PathVariable("nn") Long gamePlayerId) {
+        Player authenticatedPlayer = this.getAuthenticatedPlayer();
+        if (authenticatedPlayer == null) {
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_NO_LOGUEADO,
+                    HttpStatus.UNAUTHORIZED);
+        }
         long authenticatedPlayerId = this.getAuthenticatedPlayer().getId();
-        boolean turnsMatch;
         GamePlayer gamePlayer = gamePlayerRepository.findOne(gamePlayerId);
 
         //verifico que sea una partida en la cual se encuentra el usuario autenticado en la aplicacion
         if (gamePlayer.getPlayer().getId() ==  authenticatedPlayerId) {
                 gamePlayer.updateGameState();
+                //verifico si la partida termino y no se colocaron los scores correspondientes
                 if (gamePlayer.gameFinished() && (gamePlayer.getGame().getScores().size() != 2)) {
                     this.updateScores(gamePlayer.getGameState(), gamePlayer);
                 }
@@ -297,6 +292,40 @@ public class SalvoController {
         } else {
             return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR,
                     ResponseEntityMsgs.MSG_JUGADOR_DISTINTO_AL_LOGUEADO, HttpStatus.UNAUTHORIZED);
+        }
+    }
+    /*=================================== CREATE PLAYER ==============================================================*/
+
+    //Metodo para crear un jugador, recibe por parametro el nombre de usuario y el password
+    //Si el usuario ya existe, o el nombre esta vacio devuelve un codigo de error
+    @RequestMapping(path= "/players", method = RequestMethod.POST)
+    public ResponseEntity<Object> createPlayer(@RequestParam("email") String username,
+                                               @RequestParam("password") String password) {
+        //Nombre de usuario vacio
+        if (username.isEmpty() ) {
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR,
+                    ResponseEntityMsgs.MSG_NOMBRE_DE_USUARIO_INEXISTENTE, HttpStatus.FORBIDDEN);
+        }
+
+        Player player = playerRepository.findByUserName(username);
+        //Verifico que no exista un usuario con ese nombre
+        if (player != null) {
+            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR,
+                    ResponseEntityMsgs.MSG_NOMBRE_DE_USUARIO_REPETIDO, HttpStatus.CONFLICT);
+        }
+
+        playerRepository.save(new Player(username,password));
+        return this.createResponseEntity(ResponseEntityMsgs.KEY_SUCCESS, ResponseEntityMsgs.MSG_USUARIO_CREADO,
+                HttpStatus.CREATED);
+    }
+
+    /*============================================METODOS PRIVADOS====================================================*/
+    private Player getAuthenticatedPlayer() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            return null;
+        } else {
+            return playerRepository.findByUserName(authentication.getName());
         }
     }
 
@@ -317,48 +346,12 @@ public class SalvoController {
         }
     }
 
-
-    /*=================================== CREATE PLAYER ==============================================================*/
-
-    //Metodo para crear un jugador, recibe por parametro el nombre de usuario y el password
-    //Si el usuario ya existe, o el nombre esta vacio devuelve un codigo de error
-    @RequestMapping(path= "/players", method = RequestMethod.POST)
-    public ResponseEntity<Object> createPlayer(@RequestParam("email") String username,
-                                               @RequestParam("password") String password) {
-        //Nombre de usuario vacio
-        if (username.isEmpty() ) {
-            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR,
-                    ResponseEntityMsgs.MSG_NOMBRE_DE_USUARIO_INEXISTENTE, HttpStatus.FORBIDDEN);
+    private boolean canPlaceSalvoes(GamePlayer gamePlayer, Salvo salvo) {
+        if (gamePlayer.getSalvoes().isEmpty()) {
+            return true;
         }
-
-        Player player = playerRepository.findByUserName(username);
-        //Nombre de usuario existente
-        if (player != null) {
-            return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR,
-                    ResponseEntityMsgs.MSG_NOMBRE_DE_USUARIO_REPETIDO, HttpStatus.CONFLICT);
-        }
-
-        playerRepository.save(new Player(username,password));
-        return new ResponseEntity<>(this.getResponseMapDTO(ResponseEntityMsgs.KEY_SUCCESS,
-                ResponseEntityMsgs.MSG_USUARIO_CREADO), HttpStatus.CREATED);
-    }
-
-
-    /*==========================================================METODO PRIVADO========================================S*/
-
-    private Map<String,Object> getResponseMapDTO(String clave, Object valor) {
-        Map<String,Object> responseMapDTO = new LinkedHashMap<>();
-        responseMapDTO.put(clave, valor);
-        return responseMapDTO;
-    }
-
-    private Player getAuthenticatedPlayer() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
-            return null;
-        } else {
-            return playerRepository.findByUserName(authentication.getName());
-        }
+        return (salvo.getTurn() == gamePlayer.getSalvoes().size() + 1) &&
+                (!gamePlayer.repeatedSalvo(salvo.getSalvoLocations()));
     }
 
     private ResponseEntity<Object> createResponseEntity(String tipoDeRespuesta, Object valor, HttpStatus httpStatus ) {
@@ -366,5 +359,4 @@ public class SalvoController {
         responseMap.put(tipoDeRespuesta, valor);
         return new ResponseEntity<>(responseMap, httpStatus);
     }
-
 }

@@ -78,9 +78,13 @@ public class GamePlayer {
         return this.ships.isEmpty();
     }
 
-    public boolean hasNoSalvoes() {
-        return this.salvoes.isEmpty();
+    public void addShips(List<Ship> ships) {
+        ships.forEach(ship -> this.ships.add(new Ship(ship.getShipType(), this,
+                    ship.getShipLocations())));
     }
+
+
+
 
     @JsonIgnore
     public Map<String,Object> getGamePlayerDTO() {
@@ -129,6 +133,10 @@ public class GamePlayer {
     }
 
     public void updateGameState() {
+
+        if (this.gameState == GameState.PLACESHIPS && this.ships.size() != 0) {
+            this.gameState = GameState.WAIT;
+        }
 
         if ((this.gameState == GameState.WAIT) && (this.game.bothPlayersHaveShips())
                 && (this.game.salvosTurnMatch())) {
