@@ -48,7 +48,7 @@ public class Player {
 
 
     public List<Game> getGames(){
-        return this.gamePlayers.stream().map(game -> game.getGame()).collect(Collectors.toList());
+        return this.gamePlayers.stream().map(GamePlayer::getGame).collect(Collectors.toList());
     }
 
     @Override
@@ -82,7 +82,7 @@ public class Player {
         long acumWon = this.getWonGames();
         double acumTie = this.getTiedGames();
         double acumLost = this.getLostGames();
-        double acumScore = scores.stream().filter(score -> score.getScore() != -1).mapToDouble(score -> score.getScore()).sum();
+        double acumScore = scores.stream().filter(score -> score.getScore() != -1).mapToDouble(Score::getScore).sum();
 
         scoreResume.put("total", acumScore);
         scoreResume.put("won", acumWon);
@@ -92,18 +92,15 @@ public class Player {
     }
 
     private long getWonGames() {
-        long acum = scores.stream().filter(score -> score.getScore() == 1).count();
-        return acum;
+        return scores.stream().filter(score -> score.getScore() == 1).count();
     }
 
     private long getTiedGames() {
-        long acum = scores.stream().filter(score -> score.getScore() == 0.5).count();
-        return acum;
+        return scores.stream().filter(score -> score.getScore() == 0.5).count();
     }
 
     private double getLostGames() {
-        long acum = scores.stream().filter(score -> score.getScore() == 0).count();
-        return acum;
+        return scores.stream().filter(score -> score.getScore() == 0).count();
     }
 
     public long getId() {

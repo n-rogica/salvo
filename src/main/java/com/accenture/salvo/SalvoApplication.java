@@ -313,7 +313,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
 
 
 
-		return (args) -> {
+		return args -> {
 			playerRepository.save(jbauer);
 			playerRepository.save(cobrian);
 			playerRepository.save(talmeida);

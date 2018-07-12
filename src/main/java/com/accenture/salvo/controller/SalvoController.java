@@ -261,7 +261,7 @@ public class SalvoController {
     @RequestMapping("/leaderBoard")
     public List<Object> getLeaderBoard() {
         List<Player> players = playerRepository.findAll();
-        return players.stream().map(player -> player.getScoreHistoryDTO()).collect(Collectors.toList());
+        return players.stream().map(Player::getScoreHistoryDTO).collect(Collectors.toList());
     }
 
     /*===============================================GET GAME BY ID===================================================*/
@@ -277,7 +277,8 @@ public class SalvoController {
             return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_NO_LOGUEADO,
                     HttpStatus.UNAUTHORIZED);
         }
-        long authenticatedPlayerId = this.getAuthenticatedPlayer().getId();
+
+        long authenticatedPlayerId = authenticatedPlayer.getId();
         GamePlayer gamePlayer = gamePlayerRepository.findOne(gamePlayerId);
 
         //verifico que sea una partida en la cual se encuentra el usuario autenticado en la aplicacion
@@ -343,6 +344,8 @@ public class SalvoController {
                 scoreRepository.save(new Score(0.5, gamePlayerOfRequest.getGame(), gamePlayerOfRequest.getPlayer()));
                 scoreRepository.save(new Score(0.5, gamePlayerOfRequest.getGame(), gamePlayerOfRequest.getOpponent()));
                 break;
+            default:
+                throw new IllegalStateException("Error al computar el score");
         }
     }
 

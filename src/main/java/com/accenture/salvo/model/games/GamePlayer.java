@@ -117,11 +117,11 @@ public class GamePlayer {
     }
 
     public List<Object> getGamePlayerShipsDTO() {
-        return this.ships.stream().map(ship -> ship.getShipDTO()).collect(Collectors.toList());
+        return this.ships.stream().map(Ship::getShipDTO).collect(Collectors.toList());
     }
 
     public Object getSalvoesDTO() {
-        return this.salvoes.stream().map(salvo -> salvo.getSalvoDTO()).collect(Collectors.toList());
+        return this.salvoes.stream().map(Salvo::getSalvoDTO).collect(Collectors.toList());
     }
 
     public void addSalvo(Salvo salvo) {
@@ -134,7 +134,7 @@ public class GamePlayer {
 
     public void updateGameState() {
 
-        if (this.gameState == GameState.PLACESHIPS && this.ships.size() != 0) {
+        if (this.gameState == GameState.PLACESHIPS && !this.ships.isEmpty()) {
             this.gameState = GameState.WAIT;
         }
 
@@ -152,7 +152,6 @@ public class GamePlayer {
             //la partida no termino, ambos dispararon para el turno correspondiente y colocaron sus barcos
             if (this.gameState != GameState.PLACESHIPS) {
                 this.gameState = GameState.PLAY;
-                return;
             }
         }
     }

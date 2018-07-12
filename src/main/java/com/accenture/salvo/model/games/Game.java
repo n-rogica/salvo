@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 @Entity
 public class Game {
 
+    private static final String SELF = "self";
+    private static final String OPPONENT = "self";
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -38,7 +41,7 @@ public class Game {
 
     @JsonIgnore
     public List<Player> getPlayers(){
-        return this.gamePlayers.stream().map(player -> player.getPlayer()).collect(Collectors.toList());
+        return this.gamePlayers.stream().map(GamePlayer::getPlayer).collect(Collectors.toList());
     }
 
     public Set<Score> getScores() {
@@ -54,14 +57,14 @@ public class Game {
         Map<String,Object>  gameDTO = new LinkedHashMap<>();
         gameDTO.put("id", this.id);
         gameDTO.put("created", this.creationDate);
-        gameDTO.put("gamePlayers",gamePlayers.stream().map(gp -> gp.getGamePlayerDTO()).collect(Collectors.toList()));
+        gameDTO.put("gamePlayers",gamePlayers.stream().map(GamePlayer::getGamePlayerDTO).collect(Collectors.toList()));
         gameDTO.put("scores", scores.stream().map(Score::getScoreDTO).collect(Collectors.toList()));
         return gameDTO;
      }
 
     public Object getGameSalvoesDTO() {
       return gamePlayers.stream().flatMap(gp ->
-                gp.getSalvoes().stream().map(salvo -> salvo.getSalvoDTO())).collect(Collectors.toList());
+                gp.getSalvoes().stream().map(Salvo::getSalvoDTO)).collect(Collectors.toList());
     }
 
     public long getId() {
@@ -70,7 +73,7 @@ public class Game {
 
     @JsonIgnore
     public Object getGamePlayersDTO() {
-        return this.gamePlayers.stream().map(gp -> gp.getGamePlayerDTO()).collect(Collectors.toList());
+        return this.gamePlayers.stream().map(GamePlayer::getGamePlayerDTO).collect(Collectors.toList());
     }
 
     public long countGamePlayers() {
@@ -88,11 +91,11 @@ public class Game {
         GamePlayer gp2 = gpIt.next();
 
         if (idOfRequestPlayer == gp1.getId() ) {
-            hitsDTO.put("self", this.processSalvoes(gp2, gp1));
-            hitsDTO.put("opponent", this.processSalvoes(gp1,gp2));
+            hitsDTO.put(SELF, this.processSalvoes(gp2, gp1));
+            hitsDTO.put(OPPONENT, this.processSalvoes(gp1,gp2));
         } else {
-            hitsDTO.put("self", this.processSalvoes(gp1, gp2));
-            hitsDTO.put("opponent", this.processSalvoes(gp2,gp1));
+            hitsDTO.put(SELF, this.processSalvoes(gp1, gp2));
+            hitsDTO.put(OPPONENT, this.processSalvoes(gp2,gp1));
         }
         return hitsDTO;
     }
@@ -129,9 +132,9 @@ public class Game {
     }
 
     private long countMissedShots(int numberOfSalvos, Map<String,Integer> shipsStatusMap) {
-        for (String clave: shipsStatusMap.keySet()) {
-            if (clave.contains("Hits")) {
-                numberOfSalvos = numberOfSalvos - shipsStatusMap.get(clave);
+        for (Map.Entry<String, Integer> shipStatus: shipsStatusMap.entrySet()) {
+            if (shipStatus.getKey().contains("Hits")) {
+                numberOfSalvos = numberOfSalvos - shipStatus.getValue();
             }
         }
         return numberOfSalvos;
@@ -180,10 +183,7 @@ public class Game {
             Iterator<GamePlayer> gpIt = this.gamePlayers.iterator();
             GamePlayer gp1 = gpIt.next();
             GamePlayer gp2 = gpIt.next();
-            if (gp1.getShips().isEmpty() || gp2.getShips().isEmpty()) {
-                return false;
-            }
-            return true;
+            return !gp1.getShips().isEmpty() && !gp2.getShips().isEmpty();
         }
     }
 
@@ -204,22 +204,22 @@ public class Game {
     }
 
     private GameResult getGameResult(GamePlayer gpOfRequest, GamePlayer opponent) {
-        if (this.AllShipsSunk(gpOfRequest, opponent)) {
-            if (this.AllShipsSunk(opponent, gpOfRequest)) {
+        if (this.allShipsSunk(gpOfRequest, opponent)) {
+            if (this.allShipsSunk(opponent, gpOfRequest)) {
                 return GameResult.TIE;
             } else {
                 return GameResult.WON;
             }
         }
 
-        if (this.AllShipsSunk(opponent,gpOfRequest)) {
+        if (this.allShipsSunk(opponent,gpOfRequest)) {
             return GameResult.LOST;
         }
 
         return GameResult.TBD;
     }
 
-    public boolean AllShipsSunk(GamePlayer attacker, GamePlayer receiver) {
+    public boolean allShipsSunk(GamePlayer attacker, GamePlayer receiver) {
         int numberOfPossibleHits = receiver.getShips().stream().mapToInt(ship -> ship.getShipType().getLenght()).sum();
         int numberOfActualHits = 0;
         for (Salvo salvo: attacker.getSalvoes()) {

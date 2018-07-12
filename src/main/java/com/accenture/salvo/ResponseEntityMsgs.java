@@ -24,6 +24,10 @@ public final class ResponseEntityMsgs {
     public static final String MSG_NOMBRE_DE_USUARIO_REPETIDO = "Ya existe un usuario con ese nombre";
     public static final String MSG_USUARIO_CREADO = "Usuario creado";
 
+    private ResponseEntityMsgs() {
+        throw new IllegalStateException("Utility Class");
+    }
+
 
 
 }
