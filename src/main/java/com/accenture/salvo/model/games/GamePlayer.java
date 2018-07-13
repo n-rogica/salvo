@@ -81,6 +81,10 @@ public class GamePlayer {
         return this.ships.isEmpty();
     }
 
+    public HitsTaken getHitsTakenForTurn(int turn) {
+        return this.hitsTaken.stream().filter(ht -> ht.getTurn() == turn).findFirst().get();
+    }
+
     public void addShips(List<Ship> ships) {
         ships.forEach(ship -> this.ships.add(new Ship(ship.getShipType(), this,
                     ship.getShipLocations())));
@@ -105,9 +109,6 @@ public class GamePlayer {
         });
         this.hitsTaken.add(newHitsTaken);
     }
-
-
-
 
     @JsonIgnore
     public Map<String,Object> getGamePlayerDTO() {
@@ -198,5 +199,13 @@ public class GamePlayer {
 
     public Player getOpponent() {
         return this.game.getOpponent(this.id).getPlayer();
+    }
+
+    public GamePlayer getGpOpponent() {
+        return this.game.getOpponent(this.id);
+    }
+
+    public void checkHitsTaken() {
+
     }
 }

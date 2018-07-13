@@ -15,9 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -298,14 +296,108 @@ public class SalvoController {
         gameViewDTO.put("gamePlayers", gamePlayer.getGame().getGamePlayersDTO());
         gameViewDTO.put("ships", gamePlayer.getGamePlayerShipsDTO());;
         gameViewDTO.put("salvoes", gamePlayer.getGame().getGameSalvoesDTO());
-        gameViewDTO.put("hits",this.generateGameHitsDTO(gamePlayer));
+        if (gamePlayer.getGame().countGamePlayers() != 2) {
+            gameViewDTO.put("hits", this.getPlaceHolderDTO());
+        } else {
+            gameViewDTO.put("hits", this.generateGameHitsDTO(gamePlayer));
+        }
         return gameViewDTO;
     }
 
-    private Map<String,Object> generateGameHitsDTO(GamePlayer gamePlayer) {
-
-
+    private Object getPlaceHolderDTO() {
+        Map<String,Object> hitsDTO = new LinkedHashMap<>();
+        hitsDTO.put("self", new ArrayList<>());
+        hitsDTO.put("opponent",new ArrayList<>());
+        return hitsDTO;
     }
+
+    private Map<String,Object> generateGameHitsDTO(GamePlayer gamePlayerOfRequest) {
+        Map<String,Object> hitsDTO = new LinkedHashMap<>();
+        hitsDTO.put("self",this.getHitsResume(gamePlayerOfRequest.getGpOpponent(),gamePlayerOfRequest));
+        hitsDTO.put("opponent",this.getHitsResume(gamePlayerOfRequest,gamePlayerOfRequest.getGpOpponent()));
+        return hitsDTO;
+    }
+
+    private List<Map<String,Object>> getHitsResume(GamePlayer attacker, GamePlayer receiver) {
+        List<Map<String,Object>> processedHits = new LinkedList<>();
+        boolean hideLastSalvo = false;
+
+        if (attacker.getSalvoes().size() > receiver.getSalvoes().size()) {
+            //si un jugador disparo y el otro no, no tengo que revelar el resultado
+            //de ese salvo hasta que el otro haya disparado
+            hideLastSalvo = true;
+        }
+
+
+        //esto es para los datos de prueba
+        attacker.checkHitsTaken();
+        receiver.checkHitsTaken();
+
+        for (Salvo salvo: attacker.getSalvoes()) {
+            Map<String, Object> processedTurnDTO = new LinkedHashMap<>();
+            processedTurnDTO.put("turn", salvo.getTurn());
+            if (hideLastSalvo && (salvo.getTurn() == attacker.getSalvoes().size())) {
+                processedTurnDTO.put("hitLocations", new ArrayList<>());
+                processedTurnDTO.put("damages", new LinkedHashMap<>());
+                processedTurnDTO.put("missed", -1);
+                processedHits.add(processedTurnDTO);
+            } else {
+                List<String> hits = new LinkedList<>();
+                Map<String,Integer> shipsStatusMap = this.createShipsStatusMap();
+                salvo.processSalvoLocations(receiver.getShips(), shipsStatusMap, hits);
+                processedTurnDTO.put("hitLocations",hits);
+                shipsStatusMap.putAll(receiver.getHitsTakenForTurn(salvo.getTurn()).getHitsOnMyFleet());
+                processedTurnDTO.put("damages", shipsStatusMap);
+                processedTurnDTO.put("missed", salvo.getSalvoLocations().size() - hits.size());
+                processedHits.add(processedTurnDTO);
+            }
+        }
+        return processedHits;
+
+
+
+        /*
+        List<Map<String,Object>> processedSalvoesDTO = new LinkedList<>();
+        Map<String,Integer> shipsStatusMap = this.createShipsStatusMap();
+        boolean hideLastSalvo = false;
+
+        if (attacker.getSalvoes().size() > receiver.getSalvoes().size()) {
+            //si un jugador disparo y el otro no, no tengo que revelar el resultado
+            //de ese salvo hasta que el otro haya disparado
+            hideLastSalvo = true;
+        }
+
+        for (Salvo salvo: attacker.getSalvoes()) {
+            Map<String, Object> processedTurnDTO = new LinkedHashMap<>();
+            processedTurnDTO.put("turn", salvo.getTurn());
+            if (hideLastSalvo && (salvo.getTurn() == attacker.getSalvoes().size())) {
+                processedTurnDTO.put("hitLocations", new ArrayList<>());
+                processedTurnDTO.put("damages", new LinkedHashMap<>());
+                processedTurnDTO.put("missed", -1);
+                processedSalvoesDTO.add(processedTurnDTO);
+            } else {
+                processedTurnDTO.put("hitLocations", salvo.getSalvoLocations());
+                process(salvo.getSalvoLocations(), receiver.getShips(), shipsStatusMap);
+                processedTurnDTO.put("damages", new LinkedHashMap<>(shipsStatusMap));
+                processedTurnDTO.put("missed", countMissedShots(salvo.getSalvoLocations().size(), shipsStatusMap));
+                processedSalvoesDTO.add(processedTurnDTO);
+                resetShipStatusMap(shipsStatusMap);
+            }
+        }
+        return processedSalvoesDTO;
+         */
+    }
+
+    private Map<String,Integer> createShipsStatusMap() {
+        Map<String,Integer> shipsStatusMap = new LinkedHashMap<>();
+        shipsStatusMap.put("carrierHits",0);
+        shipsStatusMap.put("battleshipHits",0);
+        shipsStatusMap.put("submarineHits",0);
+        shipsStatusMap.put("destroyerHits",0);
+        shipsStatusMap.put("patrolboatHits",0);
+        return shipsStatusMap;
+    }
+
     /*=================================== CREATE PLAYER ==============================================================*/
 
     //Metodo para crear un jugador, recibe por parametro el nombre de usuario y el password

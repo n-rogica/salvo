@@ -40,6 +40,10 @@ public class HitsTaken {
         this.hitsOnMyFleet = new LinkedHashMap<>(previousHitsTaken.hitsOnMyFleet);
     }
 
+    public Map<String,Integer> getHitsOnMyFleet() {
+        return this.hitsOnMyFleet;
+    }
+
     public void updateHitsOnMyFleet(String shipType) {
         this.hitsOnMyFleet.merge(shipType, 1, Integer::sum);
     }

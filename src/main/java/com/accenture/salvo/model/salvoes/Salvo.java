@@ -1,11 +1,10 @@
 package com.accenture.salvo.model.salvoes;
 
 import com.accenture.salvo.model.games.GamePlayer;
+import com.accenture.salvo.model.ships.Ship;
 
 import javax.persistence.*;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Entity
 public class Salvo {
@@ -64,5 +63,17 @@ public class Salvo {
             }
         }
         return false;
+    }
+
+    public void processSalvoLocations(Set<Ship> ships, Map<String, Integer> shipsStatusMap, List<String> hits) {
+        for (String location: this.salvoLocations) {
+            for (Ship currentShip: ships) {
+                if (currentShip.getShipLocations().contains(location)) {
+                    hits.add(location);
+                    shipsStatusMap.merge(currentShip.getShipTypeAsString().toLowerCase()+"Hits",
+                            1,Integer::sum);
+                }
+            }
+        }
     }
 }
