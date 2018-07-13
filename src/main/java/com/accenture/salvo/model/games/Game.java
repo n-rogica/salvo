@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class Game {
 
     private static final String SELF = "self";
-    private static final String OPPONENT = "self";
+    private static final String OPPONENT = "opponent";
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -21,10 +21,10 @@ public class Game {
     private final Date creationDate;
 
     @OneToMany(mappedBy = "game", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<GamePlayer> gamePlayers = new HashSet<>();
+    private Set<GamePlayer> gamePlayers = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "game", fetch = FetchType.EAGER)
-    private Set<Score> scores = new HashSet<>();
+    private Set<Score> scores = new LinkedHashSet<>();
 
     public Game(){
         this.creationDate = new Date();
@@ -37,7 +37,6 @@ public class Game {
     public Date getCreationDate(){
         return this.creationDate;
     }
-
 
     @JsonIgnore
     public List<Player> getPlayers(){
@@ -77,7 +76,7 @@ public class Game {
     }
 
     public long countGamePlayers() {
-        return this.scores.stream().count();
+        return this.gamePlayers.size();
     }
 
     public Map<String,Object> getHitsDTO(long idOfRequestPlayer) {
@@ -86,10 +85,20 @@ public class Game {
            return getPlaceHolderHitsDTO();
         }
 
-        Iterator<GamePlayer> gpIt = this.gamePlayers.iterator();
+        /*Iterator<GamePlayer> gpIt = this.gamePlayers.iterator();
         GamePlayer gp1 = gpIt.next();
-        GamePlayer gp2 = gpIt.next();
+        GamePlayer gp2 = gpIt.next();*/
 
+        GamePlayer gamePlayerOfRequest = this.gamePlayers.stream().
+                filter(gp -> gp.getId() == idOfRequestPlayer).findFirst().get();
+
+        GamePlayer opponent = this.getOpponent(idOfRequestPlayer);
+
+        hitsDTO.put(SELF,this.processSalvoes(opponent,gamePlayerOfRequest));
+        hitsDTO.put(OPPONENT,this.processSalvoes(gamePlayerOfRequest, opponent));
+        return hitsDTO;
+
+/*
         if (idOfRequestPlayer == gp1.getId() ) {
             hitsDTO.put(SELF, this.processSalvoes(gp2, gp1));
             hitsDTO.put(OPPONENT, this.processSalvoes(gp1,gp2));
@@ -97,7 +106,7 @@ public class Game {
             hitsDTO.put(SELF, this.processSalvoes(gp1, gp2));
             hitsDTO.put(OPPONENT, this.processSalvoes(gp2,gp1));
         }
-        return hitsDTO;
+        return hitsDTO;*/
     }
 
     private List<Map<String,Object>> processSalvoes(GamePlayer attacker, GamePlayer receiver) {
@@ -164,11 +173,11 @@ public class Game {
     }
 
     private void process(List<String> salvoLocations, Set<Ship> ships, Map<String, Integer> shipsStatusMap) {
-        salvoLocations.stream().forEach(salvoLocation -> checkShipHitted(salvoLocation,ships,shipsStatusMap));
+        salvoLocations.forEach(salvoLocation -> checkShipHitted(salvoLocation,ships,shipsStatusMap));
     }
 
     private void checkShipHitted(String salvoLocation, Set<Ship> ships, Map<String,Integer> shipsStatusMap) {
-        ships.stream().forEach(ship -> {
+        ships.forEach(ship -> {
             if (ship.shipPieceHitted(salvoLocation)) {
                 shipsStatusMap.merge(ship.getShipTypeAsString() + "Hits", 1, Integer::sum);
                 shipsStatusMap.merge(ship.getShipTypeAsString(), 1, Integer::sum);
@@ -219,7 +228,7 @@ public class Game {
         return GameResult.TBD;
     }
 
-    public boolean allShipsSunk(GamePlayer attacker, GamePlayer receiver) {
+    private boolean allShipsSunk(GamePlayer attacker, GamePlayer receiver) {
         int numberOfPossibleHits = receiver.getShips().stream().mapToInt(ship -> ship.getShipType().getLenght()).sum();
         int numberOfActualHits = 0;
         for (Salvo salvo: attacker.getSalvoes()) {
@@ -253,7 +262,7 @@ public class Game {
         return gp1.getSalvoes().size() == gp2.getSalvoes().size();
     }
 
-    public Map<String,Object> getPlaceHolderHitsDTO() {
+    private Map<String,Object> getPlaceHolderHitsDTO() {
         Map<String,Object> hitsDTO = new LinkedHashMap<>();
         hitsDTO.put("self", new ArrayList<>());
         hitsDTO.put("opponent", new ArrayList<>());

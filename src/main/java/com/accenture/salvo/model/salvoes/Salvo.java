@@ -12,8 +12,8 @@ public class Salvo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    long id;
-    int turn;
+    private long id;
+    private int turn;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name ="GamePlayer_id")

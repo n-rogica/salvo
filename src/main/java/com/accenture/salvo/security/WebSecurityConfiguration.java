@@ -14,7 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 
 	@Autowired
-    PlayerRepository playerRepository;
+    private PlayerRepository playerRepository;
 
 	@Override
 	public void init(AuthenticationManagerBuilder auth) throws Exception {

@@ -23,8 +23,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api")
 public class SalvoController {
-
-
     @Autowired
     private GameRepository gameRepository;
 
@@ -36,13 +34,6 @@ public class SalvoController {
 
     @Autowired
     private PlayerRepository playerRepository;
-
-    @Autowired
-    private ShipRepository shipRepository;
-
-    @Autowired
-    private SalvoRepository salvoRepository;
-
 
     /*===============================================GET GAME ID======================================================*/
 
