@@ -207,9 +207,11 @@ public class SalvoController {
         Salvo newSalvo = new Salvo(gamePlayer,gamePlayer.getSalvoes().size()+1, salvo.getSalvoLocations());
         if (this.canPlaceSalvoes(gamePlayer, newSalvo)) {
             gamePlayer.addSalvo(newSalvo);
+            gamePlayer.getGame().updateHitsTakenForSalvo(gamePlayer.getId(),newSalvo);
             gamePlayer.setGameState(GameState.WAIT);
             gamePlayer.updateGameState();
             gamePlayerRepository.save(gamePlayer);
+
             return this.createResponseEntity(ResponseEntityMsgs.KEY_SUCCESS, ResponseEntityMsgs.MSG_SALVOS_AGREGADOS,
                     HttpStatus.CREATED);
         } else {
@@ -280,11 +282,29 @@ public class SalvoController {
                     this.updateScores(gamePlayer.getGameState(), gamePlayer);
                 }
                 gamePlayerRepository.save(gamePlayer);
-                return gamePlayer.getGameplayerPovDTO();
+                return this.generateGameView(gamePlayer);
+                //return gamePlayer.getGameplayerPovDTO();
         } else {
             return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR,
                     ResponseEntityMsgs.MSG_JUGADOR_DISTINTO_AL_LOGUEADO, HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    private Map<String,Object> generateGameView(GamePlayer gamePlayer) {
+        Map<String,Object> gameViewDTO = new LinkedHashMap<>();
+        gameViewDTO.put("id", gamePlayer.getGame().getId());
+        gameViewDTO.put("created", gamePlayer.getGame().getCreationDate());
+        gameViewDTO.put("gameState", gamePlayer.getGameState());
+        gameViewDTO.put("gamePlayers", gamePlayer.getGame().getGamePlayersDTO());
+        gameViewDTO.put("ships", gamePlayer.getGamePlayerShipsDTO());;
+        gameViewDTO.put("salvoes", gamePlayer.getGame().getGameSalvoesDTO());
+        gameViewDTO.put("hits",this.generateGameHitsDTO(gamePlayer));
+        return gameViewDTO;
+    }
+
+    private Map<String,Object> generateGameHitsDTO(GamePlayer gamePlayer) {
+
+
     }
     /*=================================== CREATE PLAYER ==============================================================*/
 

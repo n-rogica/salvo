@@ -268,4 +268,9 @@ public class Game {
         hitsDTO.put("opponent", new ArrayList<>());
         return  hitsDTO;
     }
+
+    public void updateHitsTakenForSalvo(Long idOfAttacker, Salvo newSalvo) {
+        GamePlayer receiver = this.getOpponent(idOfAttacker);
+        receiver.updateHitsTaken(newSalvo);
+    }
 }

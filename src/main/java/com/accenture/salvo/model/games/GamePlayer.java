@@ -29,7 +29,8 @@ public class GamePlayer {
     @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Salvo> salvoes = new HashSet<>();
 
-    
+    @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<HitsTaken> hitsTaken = new HashSet<>();
 
 
     private Date joinDate;
@@ -83,6 +84,26 @@ public class GamePlayer {
     public void addShips(List<Ship> ships) {
         ships.forEach(ship -> this.ships.add(new Ship(ship.getShipType(), this,
                     ship.getShipLocations())));
+    }
+
+    public void updateHitsTaken(Salvo attackerSalvo) {
+        HitsTaken newHitsTaken;
+        if (this.hitsTaken.isEmpty()) {
+            newHitsTaken = new HitsTaken(this, attackerSalvo.getTurn());
+        } else {
+            HitsTaken previousHitsTaken = this.hitsTaken.stream().
+                    filter(ht -> ht.getTurn() == attackerSalvo.getTurn()-1).findFirst().get();
+            newHitsTaken = new HitsTaken(previousHitsTaken);
+        }
+
+        attackerSalvo.getSalvoLocations().forEach(location -> {
+            for (Ship ship: this.getShips()) {
+                if (ship.getShipLocations().contains(location)) {
+                    newHitsTaken.updateHitsOnMyFleet(ship.getShipTypeAsString());
+                }
+            }
+        });
+        this.hitsTaken.add(newHitsTaken);
     }
 
 
