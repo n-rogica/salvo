@@ -49,7 +49,7 @@ public class Ship {
 
     public Map<String, Object> getShipDTO() {
         Map<String,Object>  shipDTO = new LinkedHashMap<>();
-        shipDTO.put("type", this.shipType);
+        shipDTO.put("type", this.shipType.toString().toLowerCase());
         shipDTO.put("locations", this.shipLocations);
         return shipDTO;
     }

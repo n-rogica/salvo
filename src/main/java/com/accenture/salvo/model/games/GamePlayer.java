@@ -31,8 +31,6 @@ public class GamePlayer {
 
     @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<HitsTaken> hitsTaken = new HashSet<>();
-
-
     private Date joinDate;
     private GameState gameState;
 
