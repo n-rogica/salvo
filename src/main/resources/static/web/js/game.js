@@ -79,7 +79,14 @@ function refreshGameView(_url) {
                 $('#placingShipsBoard').show('puff', 'slow');
             }
             if (gamePlayerData.gameState === "WAITINGFOROPP"){
+
                 $('#battleGrids').show('puff', 'slow');
+                $('#salvoBlock').hide('puff', 'slow');
+                $('#gameRecordBlock').show('puff', 'slow');
+                waitState = true;
+                setTimeout(function() {
+                   refreshGameView(makeUrl());
+                   console.log("...refreshing gameview...");}, 5000);
             }
 
             if (gamePlayerData.gameState === "WON"){

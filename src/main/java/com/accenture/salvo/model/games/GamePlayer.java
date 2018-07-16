@@ -82,7 +82,11 @@ public class GamePlayer {
     }
 
     public HitsTaken getHitsTakenForTurn(int turn) {
-        return this.hitsTaken.stream().filter(ht -> ht.getTurn() == turn).findFirst().get();
+        if (this.hitsTaken == null) {
+            return null;
+        } else {
+            return this.hitsTaken.stream().filter(ht -> ht.getTurn() == turn).findAny().orElse(null);
+        }
     }
 
     public void addShips(List<Ship> ships) {
@@ -96,7 +100,7 @@ public class GamePlayer {
             newHitsTaken = new HitsTaken(this, attackerSalvo.getTurn());
         } else {
             HitsTaken previousHitsTaken = this.hitsTaken.stream().
-                    filter(ht -> ht.getTurn() == attackerSalvo.getTurn()-1).findFirst().get();
+                    filter(ht -> ht.getTurn() == attackerSalvo.getTurn()-1).findAny().orElse(null);
             newHitsTaken = new HitsTaken(previousHitsTaken);
         }
 
@@ -198,9 +202,7 @@ public class GamePlayer {
 
         if ((this.hitsTaken.isEmpty()) && (!this.game.getOpponent(this.id).getSalvoes().isEmpty())) {
             GamePlayer opponent = this.game.getOpponent(this.id);
-            opponent.getSalvoes().stream().sorted(Comparator.comparingInt(Salvo::getTurn)).forEach(salvo -> {
-                this.updateHitsTaken(salvo);
-            });
+            opponent.getSalvoes().stream().sorted(Comparator.comparingInt(Salvo::getTurn)).forEach(this::updateHitsTaken);
         }
 
     }
@@ -210,10 +212,8 @@ public class GamePlayer {
             return false;
         }
         int numberOfLastTurn = this.getSalvoes().size();
-        HitsTaken hitsTaken = this.getHitsTakenForTurn(numberOfLastTurn);
-        if ((hitsTaken.numberOfSunkShips() != 0) && (hitsTaken.numberOfSunkShips() == this.getShips().size())) {
-            return true;
-        }
-        return false;
+        HitsTaken hitsTakenForTurn = this.getHitsTakenForTurn(numberOfLastTurn);
+        return (hitsTakenForTurn.numberOfSunkShips() != 0) &&
+                (hitsTakenForTurn.numberOfSunkShips() == this.getShips().size());
     }
 }

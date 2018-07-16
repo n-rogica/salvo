@@ -30,7 +30,7 @@ public class Score {
         this.scoreValue = score;
         if (this.scoreValue == null) {
             this.finishDate = game.getCreationDate();
-            this.finishDate.toInstant().plusSeconds(1800);
+            this.finishDate = Date.from(this.finishDate.toInstant().plusSeconds(1800));
         } else {
             this.finishDate = null;
         }

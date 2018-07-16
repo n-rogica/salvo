@@ -286,7 +286,7 @@ public class SalvoController {
         gameViewDTO.put("created", gamePlayer.getGame().getCreationDate());
         gameViewDTO.put("gameState", gamePlayer.getGameState());
         gameViewDTO.put("gamePlayers", gamePlayer.getGame().getGamePlayersDTO());
-        gameViewDTO.put("ships", gamePlayer.getGamePlayerShipsDTO());;
+        gameViewDTO.put("ships", gamePlayer.getGamePlayerShipsDTO());
         gameViewDTO.put("salvoes", gamePlayer.getGame().getGameSalvoesDTO());
         if (gamePlayer.getGame().countGamePlayers() != 2) {
             gameViewDTO.put("hits", this.getPlaceHolderDTOForHits());

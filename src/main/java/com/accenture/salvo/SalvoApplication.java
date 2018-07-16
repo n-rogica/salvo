@@ -18,9 +18,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Controller;
-
-
 import java.util.*;
 
 @SpringBootApplication
@@ -44,7 +41,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
 		Player jbauer = new Player("j.bauer@ctu.gov", "24");
 		Player cobrian = new Player("c.obrian@ctu.gov", "42");
 		Player kbauer = new Player("kim_bauer@gmail.com", "kb");
-		Player talmeida = new Player("t.almeida@cut.gov", "mole");
+		Player talmeida = new Player("t.almeida@ctu.gov", "mole");
 
 
 
