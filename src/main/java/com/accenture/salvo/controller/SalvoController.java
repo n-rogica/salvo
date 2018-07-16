@@ -49,7 +49,6 @@ public class SalvoController {
             gamesDTO.put("player",player.getPlayerDTO());
             gamesDTO.put("games", games.stream().map(Game::getGameDTO).collect(Collectors.toList()));
         }
-
         return gamesDTO;
     }
 
@@ -142,7 +141,6 @@ public class SalvoController {
         }
     }
 
-
     /*============================================GET SALVOES=========================================================*/
 
     /*Metodo que devuelve los salvos del jugador pasado por parametro en la url*/
@@ -150,7 +148,6 @@ public class SalvoController {
     public Object getSalvoes(@PathVariable("gamePlayerId") long gpId) {
         Map<String,Object> playerSalvoes = new LinkedHashMap<>();
         GamePlayer gamePlayer = gamePlayerRepository.findOne(gpId);
-
         Player authenticatedPlayer = getAuthenticatedPlayer();
 
         if (authenticatedPlayer == null) {
@@ -174,7 +171,6 @@ public class SalvoController {
         return playerSalvoes;
     }
 
-
     /*==============================================SET SALVOES=======================================================*/
     /* Metodo que recibe por parametro una lista de salvos y si se cumplen las condiciones los asocia
     con el player indicado*/
@@ -189,7 +185,6 @@ public class SalvoController {
         }
 
         GamePlayer gamePlayer = gamePlayerRepository.findOne(gpId);
-
         if (gamePlayer == null) {
             return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR, ResponseEntityMsgs.MSG_JUGADOR_NO_ENCONTRADO,
                     HttpStatus.UNAUTHORIZED);
@@ -205,11 +200,9 @@ public class SalvoController {
         Salvo newSalvo = new Salvo(gamePlayer,gamePlayer.getSalvoes().size()+1, salvo.getSalvoLocations());
         if (this.canPlaceSalvoes(gamePlayer, newSalvo)) {
             gamePlayer.addSalvo(newSalvo);
-         //   gamePlayer.getGame().updateHitsTakenForSalvo(gamePlayer.getId(),newSalvo);
             gamePlayer.setGameState(GameState.WAIT);
             gamePlayer.updateGameState();
             gamePlayerRepository.save(gamePlayer);
-
             return this.createResponseEntity(ResponseEntityMsgs.KEY_SUCCESS, ResponseEntityMsgs.MSG_SALVOS_AGREGADOS,
                     HttpStatus.CREATED);
         } else {
@@ -279,9 +272,8 @@ public class SalvoController {
                 if (gamePlayer.gameFinished() && (gamePlayer.getGame().getScores().size() != 2)) {
                     this.updateScores(gamePlayer.getGameState(), gamePlayer);
                 }
-                gamePlayerRepository.save(gamePlayer);
+               gamePlayerRepository.save(gamePlayer);
                return this.generateGameView(gamePlayer);
-               //return gamePlayer.getGameplayerPovDTO();
         } else {
             return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR,
                     ResponseEntityMsgs.MSG_JUGADOR_DISTINTO_AL_LOGUEADO, HttpStatus.UNAUTHORIZED);
@@ -297,14 +289,14 @@ public class SalvoController {
         gameViewDTO.put("ships", gamePlayer.getGamePlayerShipsDTO());;
         gameViewDTO.put("salvoes", gamePlayer.getGame().getGameSalvoesDTO());
         if (gamePlayer.getGame().countGamePlayers() != 2) {
-            gameViewDTO.put("hits", this.getPlaceHolderDTO());
+            gameViewDTO.put("hits", this.getPlaceHolderDTOForHits());
         } else {
             gameViewDTO.put("hits", this.generateGameHitsDTO(gamePlayer));
         }
         return gameViewDTO;
     }
 
-    private Object getPlaceHolderDTO() {
+    private Map<String,Object> getPlaceHolderDTOForHits() {
         Map<String,Object> hitsDTO = new LinkedHashMap<>();
         hitsDTO.put("self", new ArrayList<>());
         hitsDTO.put("opponent",new ArrayList<>());
@@ -330,12 +322,9 @@ public class SalvoController {
             hideLastSalvo = false;
         }
 
-
-        //esto es para los datos de prueba
+        //verifico que el historial de hits en los barcos de cada jugador este actualizado
         attacker.updateHitsTakenIfNeeded();
         receiver.updateHitsTakenIfNeeded();
-
-
 
         attacker.getSalvoes().stream().sorted(Comparator.comparingInt(Salvo::getTurn)).forEach(salvo -> {
             Map<String, Object> processedTurnDTO = new LinkedHashMap<>();
@@ -356,27 +345,6 @@ public class SalvoController {
                 processedHits.add(processedTurnDTO);
             }
         });
-
-
-        /*for (Salvo salvo: attacker.getSalvoes()) {
-            Map<String, Object> processedTurnDTO = new LinkedHashMap<>();
-            processedTurnDTO.put("turn", salvo.getTurn());
-            if (hideLastSalvo && (salvo.getTurn() == attacker.getSalvoes().size())) {
-                processedTurnDTO.put("hitLocations", new ArrayList<>());
-                processedTurnDTO.put("damages", new LinkedHashMap<>());
-                processedTurnDTO.put("missed", -1);
-                processedHits.add(processedTurnDTO);
-            } else {
-                List<String> hits = new LinkedList<>();
-                Map<String,Integer> shipsStatusMap = this.createShipsStatusMap();
-                salvo.processSalvoLocations(receiver.getShips(), shipsStatusMap, hits);
-                processedTurnDTO.put("hitLocations",hits);
-                shipsStatusMap.putAll(receiver.getHitsTakenForTurn(salvo.getTurn()).getHitsOnMyFleet());
-                processedTurnDTO.put("damages", shipsStatusMap);
-                processedTurnDTO.put("missed", salvo.getSalvoLocations().size() - hits.size());
-                processedHits.add(processedTurnDTO);
-            }
-        }*/
         return processedHits;
     }
 

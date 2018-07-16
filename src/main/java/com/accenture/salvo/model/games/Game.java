@@ -79,36 +79,6 @@ public class Game {
         return this.gamePlayers.size();
     }
 
-    public Map<String,Object> getHitsDTO(long idOfRequestPlayer) {
-        Map<String,Object> hitsDTO = new LinkedHashMap<>();
-        if (this.gamePlayers.size()!= 2) {
-           return getPlaceHolderHitsDTO();
-        }
-
-        /*Iterator<GamePlayer> gpIt = this.gamePlayers.iterator();
-        GamePlayer gp1 = gpIt.next();
-        GamePlayer gp2 = gpIt.next();*/
-
-        GamePlayer gamePlayerOfRequest = this.gamePlayers.stream().
-                filter(gp -> gp.getId() == idOfRequestPlayer).findFirst().get();
-
-        GamePlayer opponent = this.getOpponent(idOfRequestPlayer);
-
-        hitsDTO.put(SELF,this.processSalvoes(opponent,gamePlayerOfRequest));
-        hitsDTO.put(OPPONENT,this.processSalvoes(gamePlayerOfRequest, opponent));
-        return hitsDTO;
-
-/*
-        if (idOfRequestPlayer == gp1.getId() ) {
-            hitsDTO.put(SELF, this.processSalvoes(gp2, gp1));
-            hitsDTO.put(OPPONENT, this.processSalvoes(gp1,gp2));
-        } else {
-            hitsDTO.put(SELF, this.processSalvoes(gp1, gp2));
-            hitsDTO.put(OPPONENT, this.processSalvoes(gp2,gp1));
-        }
-        return hitsDTO;*/
-    }
-
     private List<Map<String,Object>> processSalvoes(GamePlayer attacker, GamePlayer receiver) {
         List<Map<String,Object>> processedSalvoesDTO = new LinkedList<>();
         Map<String,Integer> shipsStatusMap = this.createShipsStatusMap();
@@ -139,24 +109,6 @@ public class Game {
                 resetShipStatusMap(shipsStatusMap);
             }
         });
-/*
-        for (Salvo salvo: attacker.getSalvoes()) {
-            Map<String, Object> processedTurnDTO = new LinkedHashMap<>();
-            processedTurnDTO.put("turn", salvo.getTurn());
-            if (hideLastSalvo && (salvo.getTurn() == attacker.getSalvoes().size())) {
-                processedTurnDTO.put("hitLocations", new ArrayList<>());
-                processedTurnDTO.put("damages", new LinkedHashMap<>());
-                processedTurnDTO.put("missed", -1);
-                processedSalvoesDTO.add(processedTurnDTO);
-            } else {
-                processedTurnDTO.put("hitLocations", salvo.getSalvoLocations());
-                process(salvo.getSalvoLocations(), receiver.getShips(), shipsStatusMap);
-                processedTurnDTO.put("damages", new LinkedHashMap<>(shipsStatusMap));
-                processedTurnDTO.put("missed", countMissedShots(salvo.getSalvoLocations().size(), shipsStatusMap));
-                processedSalvoesDTO.add(processedTurnDTO);
-                resetShipStatusMap(shipsStatusMap);
-            }
-        }*/
         return processedSalvoesDTO;
     }
 
@@ -221,27 +173,31 @@ public class Game {
         if (this.gamePlayers.size()!= 2) {
             return GameResult.TBD;
         }
-        /*
-        Iterator<GamePlayer> gpIt = this.gamePlayers.iterator();
-        GamePlayer gp1 = gpIt.next();
-        GamePlayer gp2 = gpIt.next();*/
 
         GamePlayer gamePlayerOfRequest = this.gamePlayers.stream().
                 filter(gp -> gp.getId() == idOfRequestGP).findFirst().get();
 
         GamePlayer opponent = this.getOpponent(idOfRequestGP);
-
+        gamePlayerOfRequest.updateHitsTakenIfNeeded();
+        opponent.updateHitsTakenIfNeeded();
         return this.getGameResult(gamePlayerOfRequest,opponent);
-        /*
-        if (gp1.getId() == idOfRequestGP) {
-            return this.getGameResult(gp1,gp2);
-        } else {
-            return this.getGameResult(gp2,gp1);
-        }*/
-
     }
 
     private GameResult getGameResult(GamePlayer gpOfRequest, GamePlayer opponent) {
+        if (opponent.areAllShipsSunk()) {
+            if (gpOfRequest.areAllShipsSunk()) {
+                return GameResult.TIE;
+            } else {
+                return GameResult.WON;
+            }
+        }
+
+        if (gpOfRequest.areAllShipsSunk()) {
+            return GameResult.LOST;
+        }
+
+        return GameResult.TBD;
+        /*
         if (this.allShipsSunk(gpOfRequest, opponent)) {
             if (this.allShipsSunk(opponent, gpOfRequest)) {
                 return GameResult.TIE;
@@ -254,7 +210,7 @@ public class Game {
             return GameResult.LOST;
         }
 
-        return GameResult.TBD;
+        return GameResult.TBD;*/
     }
 
     private boolean allShipsSunk(GamePlayer attacker, GamePlayer receiver) {

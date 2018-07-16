@@ -59,7 +59,7 @@ public class HitsTaken {
     public int numberOfSunkShips() {
         int acum = 0;
         for (ShipType shipType: ShipType.values()) {
-            if (shipType.getLenght() == this.hitsOnMyFleet.get(shipType.toString())) {
+            if (shipType.getLenght() == this.hitsOnMyFleet.get(shipType.toString().toLowerCase())) {
                 acum++;
             }
         }

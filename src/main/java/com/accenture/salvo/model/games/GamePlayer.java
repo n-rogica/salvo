@@ -128,18 +128,6 @@ public class GamePlayer {
         return false;
     }
 
-    public Map<String,Object> getGameplayerPovDTO() {
-        Map<String,Object>  gamePlayerDTO = new LinkedHashMap<>();
-        gamePlayerDTO.put("id", this.game.getId());
-        gamePlayerDTO.put("created", this.game.getCreationDate());
-        gamePlayerDTO.put("gameState", this.gameState);
-        gamePlayerDTO.put("gamePlayers", this.game.getGamePlayersDTO());
-        gamePlayerDTO.put("ships", this.getGamePlayerShipsDTO());
-        gamePlayerDTO.put("salvoes", this.game.getGameSalvoesDTO());
-        gamePlayerDTO.put("hits", this.game.getHitsDTO(this.id));
-        return gamePlayerDTO;
-    }
-
     public List<Object> getGamePlayerShipsDTO() {
         return this.ships.stream().map(Ship::getShipDTO).collect(Collectors.toList());
     }
@@ -215,5 +203,17 @@ public class GamePlayer {
             });
         }
 
+    }
+
+    public boolean areAllShipsSunk() {
+        if (this.hitsTaken.isEmpty()) {
+            return false;
+        }
+        int numberOfLastTurn = this.getSalvoes().size();
+        HitsTaken hitsTaken = this.getHitsTakenForTurn(numberOfLastTurn);
+        if ((hitsTaken.numberOfSunkShips() != 0) && (hitsTaken.numberOfSunkShips() == this.getShips().size())) {
+            return true;
+        }
+        return false;
     }
 }
