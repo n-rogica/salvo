@@ -27,7 +27,7 @@ public class GamePlayer {
     private Set<Ship> ships = new HashSet<>();
 
     @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<Salvo> salvoes = new HashSet<>();
+    private Set<Salvo> salvoes = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<HitsTaken> hitsTaken = new HashSet<>();
@@ -150,6 +150,7 @@ public class GamePlayer {
 
     public void addSalvo(Salvo salvo) {
         this.salvoes.add(salvo);
+        this.getGame().updateHitsTakenForSalvo(this.id,salvo);
     }
 
     public GameState getGameState() {
@@ -205,7 +206,14 @@ public class GamePlayer {
         return this.game.getOpponent(this.id);
     }
 
-    public void checkHitsTaken() {
+    public void updateHitsTakenIfNeeded() {
+
+        if ((this.hitsTaken.isEmpty()) && (!this.game.getOpponent(this.id).getSalvoes().isEmpty())) {
+            GamePlayer opponent = this.game.getOpponent(this.id);
+            opponent.getSalvoes().stream().sorted(Comparator.comparingInt(Salvo::getTurn)).forEach(salvo -> {
+                this.updateHitsTaken(salvo);
+            });
+        }
 
     }
 }

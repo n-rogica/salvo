@@ -112,14 +112,34 @@ public class Game {
     private List<Map<String,Object>> processSalvoes(GamePlayer attacker, GamePlayer receiver) {
         List<Map<String,Object>> processedSalvoesDTO = new LinkedList<>();
         Map<String,Integer> shipsStatusMap = this.createShipsStatusMap();
-        boolean hideLastSalvo = false;
+        final boolean hideLastSalvo;
 
         if (attacker.getSalvoes().size() > receiver.getSalvoes().size()) {
             //si un jugador disparo y el otro no, no tengo que revelar el resultado
             //de ese salvo hasta que el otro haya disparado
             hideLastSalvo = true;
+        } else {
+            hideLastSalvo = false;
         }
 
+        attacker.getSalvoes().stream().sorted(Comparator.comparingInt(Salvo::getTurn)).forEach(salvo -> {
+            Map<String, Object> processedTurnDTO = new LinkedHashMap<>();
+            processedTurnDTO.put("turn", salvo.getTurn());
+            if (hideLastSalvo && (salvo.getTurn() == attacker.getSalvoes().size())) {
+                processedTurnDTO.put("hitLocations", new ArrayList<>());
+                processedTurnDTO.put("damages", new LinkedHashMap<>());
+                processedTurnDTO.put("missed", -1);
+                processedSalvoesDTO.add(processedTurnDTO);
+            } else {
+                processedTurnDTO.put("hitLocations", salvo.getSalvoLocations());
+                process(salvo.getSalvoLocations(), receiver.getShips(), shipsStatusMap);
+                processedTurnDTO.put("damages", new LinkedHashMap<>(shipsStatusMap));
+                processedTurnDTO.put("missed", countMissedShots(salvo.getSalvoLocations().size(), shipsStatusMap));
+                processedSalvoesDTO.add(processedTurnDTO);
+                resetShipStatusMap(shipsStatusMap);
+            }
+        });
+/*
         for (Salvo salvo: attacker.getSalvoes()) {
             Map<String, Object> processedTurnDTO = new LinkedHashMap<>();
             processedTurnDTO.put("turn", salvo.getTurn());
@@ -136,7 +156,7 @@ public class Game {
                 processedSalvoesDTO.add(processedTurnDTO);
                 resetShipStatusMap(shipsStatusMap);
             }
-        }
+        }*/
         return processedSalvoesDTO;
     }
 
@@ -201,14 +221,23 @@ public class Game {
         if (this.gamePlayers.size()!= 2) {
             return GameResult.TBD;
         }
+        /*
         Iterator<GamePlayer> gpIt = this.gamePlayers.iterator();
         GamePlayer gp1 = gpIt.next();
-        GamePlayer gp2 = gpIt.next();
+        GamePlayer gp2 = gpIt.next();*/
+
+        GamePlayer gamePlayerOfRequest = this.gamePlayers.stream().
+                filter(gp -> gp.getId() == idOfRequestGP).findFirst().get();
+
+        GamePlayer opponent = this.getOpponent(idOfRequestGP);
+
+        return this.getGameResult(gamePlayerOfRequest,opponent);
+        /*
         if (gp1.getId() == idOfRequestGP) {
             return this.getGameResult(gp1,gp2);
         } else {
             return this.getGameResult(gp2,gp1);
-        }
+        }*/
 
     }
 

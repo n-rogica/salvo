@@ -205,7 +205,7 @@ public class SalvoController {
         Salvo newSalvo = new Salvo(gamePlayer,gamePlayer.getSalvoes().size()+1, salvo.getSalvoLocations());
         if (this.canPlaceSalvoes(gamePlayer, newSalvo)) {
             gamePlayer.addSalvo(newSalvo);
-            gamePlayer.getGame().updateHitsTakenForSalvo(gamePlayer.getId(),newSalvo);
+         //   gamePlayer.getGame().updateHitsTakenForSalvo(gamePlayer.getId(),newSalvo);
             gamePlayer.setGameState(GameState.WAIT);
             gamePlayer.updateGameState();
             gamePlayerRepository.save(gamePlayer);
@@ -280,8 +280,8 @@ public class SalvoController {
                     this.updateScores(gamePlayer.getGameState(), gamePlayer);
                 }
                 gamePlayerRepository.save(gamePlayer);
-                return this.generateGameView(gamePlayer);
-                //return gamePlayer.getGameplayerPovDTO();
+               return this.generateGameView(gamePlayer);
+               //return gamePlayer.getGameplayerPovDTO();
         } else {
             return this.createResponseEntity(ResponseEntityMsgs.KEY_ERROR,
                     ResponseEntityMsgs.MSG_JUGADOR_DISTINTO_AL_LOGUEADO, HttpStatus.UNAUTHORIZED);
@@ -320,20 +320,24 @@ public class SalvoController {
 
     private List<Map<String,Object>> getHitsResume(GamePlayer attacker, GamePlayer receiver) {
         List<Map<String,Object>> processedHits = new LinkedList<>();
-        boolean hideLastSalvo = false;
+        final boolean hideLastSalvo;
 
         if (attacker.getSalvoes().size() > receiver.getSalvoes().size()) {
             //si un jugador disparo y el otro no, no tengo que revelar el resultado
             //de ese salvo hasta que el otro haya disparado
             hideLastSalvo = true;
+        } else {
+            hideLastSalvo = false;
         }
 
 
         //esto es para los datos de prueba
-        attacker.checkHitsTaken();
-        receiver.checkHitsTaken();
+        attacker.updateHitsTakenIfNeeded();
+        receiver.updateHitsTakenIfNeeded();
 
-        for (Salvo salvo: attacker.getSalvoes()) {
+
+
+        attacker.getSalvoes().stream().sorted(Comparator.comparingInt(Salvo::getTurn)).forEach(salvo -> {
             Map<String, Object> processedTurnDTO = new LinkedHashMap<>();
             processedTurnDTO.put("turn", salvo.getTurn());
             if (hideLastSalvo && (salvo.getTurn() == attacker.getSalvoes().size())) {
@@ -351,41 +355,29 @@ public class SalvoController {
                 processedTurnDTO.put("missed", salvo.getSalvoLocations().size() - hits.size());
                 processedHits.add(processedTurnDTO);
             }
-        }
-        return processedHits;
+        });
 
 
-
-        /*
-        List<Map<String,Object>> processedSalvoesDTO = new LinkedList<>();
-        Map<String,Integer> shipsStatusMap = this.createShipsStatusMap();
-        boolean hideLastSalvo = false;
-
-        if (attacker.getSalvoes().size() > receiver.getSalvoes().size()) {
-            //si un jugador disparo y el otro no, no tengo que revelar el resultado
-            //de ese salvo hasta que el otro haya disparado
-            hideLastSalvo = true;
-        }
-
-        for (Salvo salvo: attacker.getSalvoes()) {
+        /*for (Salvo salvo: attacker.getSalvoes()) {
             Map<String, Object> processedTurnDTO = new LinkedHashMap<>();
             processedTurnDTO.put("turn", salvo.getTurn());
             if (hideLastSalvo && (salvo.getTurn() == attacker.getSalvoes().size())) {
                 processedTurnDTO.put("hitLocations", new ArrayList<>());
                 processedTurnDTO.put("damages", new LinkedHashMap<>());
                 processedTurnDTO.put("missed", -1);
-                processedSalvoesDTO.add(processedTurnDTO);
+                processedHits.add(processedTurnDTO);
             } else {
-                processedTurnDTO.put("hitLocations", salvo.getSalvoLocations());
-                process(salvo.getSalvoLocations(), receiver.getShips(), shipsStatusMap);
-                processedTurnDTO.put("damages", new LinkedHashMap<>(shipsStatusMap));
-                processedTurnDTO.put("missed", countMissedShots(salvo.getSalvoLocations().size(), shipsStatusMap));
-                processedSalvoesDTO.add(processedTurnDTO);
-                resetShipStatusMap(shipsStatusMap);
+                List<String> hits = new LinkedList<>();
+                Map<String,Integer> shipsStatusMap = this.createShipsStatusMap();
+                salvo.processSalvoLocations(receiver.getShips(), shipsStatusMap, hits);
+                processedTurnDTO.put("hitLocations",hits);
+                shipsStatusMap.putAll(receiver.getHitsTakenForTurn(salvo.getTurn()).getHitsOnMyFleet());
+                processedTurnDTO.put("damages", shipsStatusMap);
+                processedTurnDTO.put("missed", salvo.getSalvoLocations().size() - hits.size());
+                processedHits.add(processedTurnDTO);
             }
-        }
-        return processedSalvoesDTO;
-         */
+        }*/
+        return processedHits;
     }
 
     private Map<String,Integer> createShipsStatusMap() {
