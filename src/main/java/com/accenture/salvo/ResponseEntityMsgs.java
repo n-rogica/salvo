@@ -2,17 +2,17 @@ package com.accenture.salvo;
 
 public final class ResponseEntityMsgs {
     //keys
-    public static final String KEY_ERROR = "Error";
+    public static final String KEY_ERROR = "error";
     public static final String KEY_SUCCESS = "OK";
     public static final String KEY_GPID = "gpid";
 
 
 
     //mensajes
-    public static final String MSG_NO_LOGUEADO = "No estas logueado capo";
+    public static final String MSG_NO_LOGUEADO = "No estas logueado";
     public static final String MSG_JUEGO_CREADO = "Juego creado";
     public static final String MSG_JUGADOR_NO_ENCONTRADO = "No se encontro al jugador";
-    public static final String MSG_JUGADOR_DISTINTO_AL_LOGUEADO = "No quieras hacer trampa capo";
+    public static final String MSG_JUGADOR_DISTINTO_AL_LOGUEADO = "No quieras hacer trampa";
     public static final String MSG_JUEGO_NO_ENCONTRADO = "Juego no encontrado";
     public static final String MSG_SHIPS_AGREGADOS = "Ships agregados";
     public static final String MSG_SHIPS_NO_AGREGADOS = "Ships ya agregados";
