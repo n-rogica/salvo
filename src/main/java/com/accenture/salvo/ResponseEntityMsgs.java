@@ -3,7 +3,7 @@ package com.accenture.salvo;
 public final class ResponseEntityMsgs {
     //keys
     public static final String KEY_ERROR = "Error";
-    public static final String KEY_SUCCESS = "Exito";
+    public static final String KEY_SUCCESS = "OK";
     public static final String KEY_GPID = "gpid";
 
 
