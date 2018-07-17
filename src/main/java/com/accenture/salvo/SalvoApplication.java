@@ -175,7 +175,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
 		Ship ship22 = new Ship(ShipType.DESTROYER, g6pKbauergp1Kbauer, arrayLocations);
 
-		locations = new String[]{"C6","D7"};
+		locations = new String[]{"C6","C7"};
 		arrayLocations = new ArrayList<>(Arrays.asList(locations));
 		Ship ship23 = new Ship(ShipType.PATROLBOAT, g6pKbauergp1Kbauer, arrayLocations);
 
